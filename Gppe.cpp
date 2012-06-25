@@ -44,11 +44,30 @@ Gppe::~Gppe()
 }
 
 
+VectorXd Gppe::Getf()
+{
+	return f;
+}
 
+MatrixXd Gppe::GetW()
+{
+	return W;
+}
 
+MatrixXd Gppe::GetL()
+{
+	return L;
+}
 
+MatrixXd Gppe::GetKinv()
+{
+	return Kinv;
+}
 
-
+MatrixXd Gppe::GetKx()
+{
+	return Kx;
+}
 void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 			VectorXd theta_x,VectorXd theta_t, double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,
 			VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, 
@@ -60,6 +79,8 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	sigma=exp(sigma);
 	VectorXd f(n);
 	VectorXd fvis(idx_global.rows());
+	VectorXd deriv;
+	LLT<MatrixXd> llt;
 
 	Covfunc_t->SetTheta(theta_t);
 	Covfunc_x->SetTheta(theta_x);
@@ -67,7 +88,7 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	MatrixXd Kt=Covfunc_t->ComputeGrandMatrix(t);
 	Kx=Covfunc_x->ComputeGrandMatrix(x);
 
-	MatrixXd K= ComputeMat(Kt,ind_t,ind_t).array()*ComputeMat(Kx,ind_x,ind_x).array();
+	MatrixXd K= GetMat(Kt,ind_t,ind_t).array()*GetMat(Kx,ind_x,ind_x).array();
 	
 	double loglike =log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
 	Kinv=K.inverse();
@@ -76,41 +97,25 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	while((psi_new-psi_old)>eps)
 	{
 		psi_old=psi_new;
+		deriv=deriv_log_likelihood_gppe_fast(f, sigma, all_pairs, idx_global_1, idx_global_2, M, N);
+		W=-deriv2_log_likelihood_gppe_fast(f, sigma, all_pairs, idx_global_1, idx_global_2, M, N);
 		
-	}
-
-}
-
-MatrixXd Gppe::ComputeMat(MatrixXd mat,VectorXd t1, VectorXd t2)
-{
-	MatrixXd res(t1.rows(),t2.rows());
-	for(int i=0;i<t1.rows();i++)
-	{
-		for(int j=0;j<t2.rows();j++)
+		W=GetMat(W,idx_global,idx_global);
+		llt.compute(W+Kinv);
+		L = llt.matrixL(); //no need to extract the triangular matrix here
+		fvis=llt.solve(GetVec(deriv,idx_global)+W*fvis);
+		
+		for(int w=0;w<idx_global.rows();w++)
 		{
-			res(i,j)=mat(t1(i),t2(j));
+			f(idx_global(w))=fvis(w);	
 		}
+		loglike =log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
+		psi_new = loglike - 0.5 * fvis.transpose()*Kinv*fvis; 
 	}
-	return res;
+
 }
 
-VectorXd Gppe::ComputeVec(VectorXd vec,VectorXd t1)
-{
-	VectorXd res(t1.rows());
-	for(int i=0;i<t1.rows();i++)
-	{
-		res(i)=vec(t1(i));
-	}
-	return res;
-}
 
-VectorXd Gppe::ind2global(VectorXd vec,int j,int N)
-{
-	VectorXd res;
-	res= (j-1)*N +vec.array();
-	
-	return res;
-}
 
 
 double Gppe::log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2, int N)
@@ -124,11 +129,54 @@ double Gppe::log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd
 			if(all_pairs(j).rows()==0)
 				continue;
 			pairs=all_pairs(j);
-			idx_1=ind2global(pairs.col(1),j,N);
-			idx_2=ind2global(pairs.col(2),j,N);
-			z=(ComputeVec(f,idx_1)-ComputeVec(f,idx_2))/sigma;
+			idx_1=ind2global(pairs.col(0),j,N);
+			idx_2=ind2global(pairs.col(1),j,N);
+			z=(GetVec(f,idx_1)-GetVec(f,idx_2))/sigma;
 			z=normcdf(z);
 			loglike+= log(z.array()).sum();	
 		}
 	return loglike;
+}
+
+VectorXd Gppe::deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+{
+	VectorXd deriv_loglike, z, cdf_val, pdf_val,val;
+	// test is idx vectors are empty ?
+	M=all_pairs.rows();
+	int n=M*N;
+	z=(GetVec(f,idx_global_1)-GetVec(f,idx_global_2))/sigma;
+	cdf_val= normcdf(z);
+	pdf_val= normpdf(z);
+	val= (1./sigma) * (pdf_val.array()/cdf_val.array());
+	deriv_loglike = Get_Cumulative_Val(idx_global_1, val, n);
+	deriv_loglike-=	Get_Cumulative_Val(idx_global_2, val, n);
+	return deriv_loglike;
+}
+
+MatrixXd Gppe::deriv2_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+{
+	VectorXd deriv_loglike, z, cdf_val, pdf_val,val,ratio,all_diag_idx,ind,ind_trans;
+	M=all_pairs.rows();
+	int n=M*N;
+	VectorXd consec(n);
+	MatrixXd Deriv2(n,n);
+	for(int i=0;i<n;i++)
+	{
+		consec(i)=i;
+	}
+	all_diag_idx=sub2ind(n,n,consec,consec);
+	z=(GetVec(f,idx_global_1)-GetVec(f,idx_global_2))/sigma;
+	cdf_val= normcdf(z);
+	pdf_val= normpdf(z);
+	ratio=pdf_val.array()/cdf_val.array();
+	val= -(1./pow(sigma,2))*(ratio.array()*(z+ratio).array());
+	
+	ind=sub2ind(n,n,idx_global_1,idx_global_2);
+	GetMatGenIdx(Deriv2,ind,-val);
+	ind_trans=sub2ind(n,n,idx_global_2,idx_global_1);
+	GetMatGenIdx(Deriv2,ind_trans,-val);
+	
+	GetMatGenIdx(Deriv2,all_diag_idx,GetMatGenIdx(Deriv2,all_diag_idx)+Get_Cumulative_Val(idx_global_1, val, n));
+	GetMatGenIdx(Deriv2,all_diag_idx,GetMatGenIdx(Deriv2,all_diag_idx)+Get_Cumulative_Val(idx_global_2, val, n));
+	return Deriv2;
 }

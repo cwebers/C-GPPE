@@ -30,14 +30,22 @@ class Gppe
 	Gppe(VectorXd fnew,MatrixXd Kxnew,MatrixXd Kinvnew,MatrixXd Wnew,MatrixXd Lnew); //Constructor with parameters
 	Gppe(const Gppe & g); //Contructor by recopy
 	~Gppe(); // Destructor
+	VectorXd Getf();
+	MatrixXd GetKx();
+	MatrixXd GetKinv();
+	MatrixXd GetW();
+	MatrixXd GetL();
+
+
+
+
 	//void Predict_Gppe_Laplace();
 	//void Get_Predictive_Utility();
-	MatrixXd ComputeMat(MatrixXd mat,VectorXd t1, VectorXd t2);
-	VectorXd ComputeVec(VectorXd vec,VectorXd t1);
-	VectorXd ind2global(VectorXd vec,int j,int N);
 	void Approx_Gppe_Laplace(Covfunc *covfunc_t,Covfunc *covfunc_x,
     VectorXd theta_x,VectorXd theta_t,double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, VectorXd ind_t,VectorXd ind_x,int M,int N);
 	double log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int N);
+	VectorXd deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
+	MatrixXd deriv2_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 
 	//void Prediction_New_User();
 	//Variables

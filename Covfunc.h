@@ -22,11 +22,9 @@ using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using Eigen::SparseMatrix;
 using Eigen::Dynamic;
+using Eigen::LLT;
 using Eigen::Matrix;
-
-typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
-double normcdf(double x);
-VectorXd normcdf(VectorXd x);
+#include "Tool.h"
 class Covfunc
 {
 	public :
