@@ -108,8 +108,8 @@ VectorXd normpdf(VectorXd x)
 
 VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n)
 {
-	VectorXd count(n);
-	count.array()=0;
+	VectorXd count=VectorXd::Zero(n);
+
 	for(int i=0;i<val.rows();i++)
 	{
 		count(idx(i))= count(idx(i)) + val(i); 
