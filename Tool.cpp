@@ -14,7 +14,7 @@
 
 VectorXd ind2global(VectorXd vec,int j,int N)
 {
- 	return vec.array()+(j-1)*N;
+ 	return vec.array()+j*N;
 }
 
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2)
@@ -106,12 +106,13 @@ VectorXd normpdf(VectorXd x)
 }
 
 
-VectorXd Get_Cumulative_Val( VectorXd idx,VectorXd val, int n)
+VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n)
 {
 	VectorXd count(n);
+	count.array()=0;
 	for(int i=0;i<val.rows();i++)
 	{
-		count(idx(i))+= val(i); 
+		count(idx(i))= count(idx(i)) + val(i); 
 	}
 
 	return count;

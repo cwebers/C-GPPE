@@ -76,7 +76,7 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	//Parameters function initialization
 	double eps=10E-6, psi_new,psi_old;
 	int n=M*N;
-	sigma=exp(sigma);
+	//sigma=exp(sigma);
 	VectorXd f(n);
 	VectorXd fvis(idx_global.rows());
 	VectorXd deriv;
@@ -89,11 +89,10 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	Kx=Covfunc_x->ComputeGrandMatrix(x);
 
 	MatrixXd K= GetMat(Kt,ind_t,ind_t).array()*GetMat(Kx,ind_x,ind_x).array();
-	
 	double loglike =log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
 	Kinv=K.inverse();
 	psi_new = loglike - 0.5 * fvis.transpose()*Kinv*fvis; 
-	psi_old = -1000;
+	psi_old = -10E6;
 	while((psi_new-psi_old)>eps)
 	{
 		psi_old=psi_new;
@@ -138,18 +137,34 @@ double Gppe::log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd
 	return loglike;
 }
 
-VectorXd Gppe::deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+VectorXd Gppe::deriv_log_likelihood_gppe_fast(VectorXd f,double sigma,const  TypePair& all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
 {
-	VectorXd deriv_loglike, z, cdf_val, pdf_val,val;
-	// test is idx vectors are empty ?
+	VectorXd deriv_loglike, z, cdf_val, pdf_val,val, coef,coef2;
+	// test if idx vectors are empty ?
 	M=all_pairs.rows();
+	cout<<"M"<<M<<endl;
 	int n=M*N;
+	cout<<"n"<<n<<endl;
 	z=(GetVec(f,idx_global_1)-GetVec(f,idx_global_2))/sigma;
+	cout<<"z"<<z<<endl;
+
 	cdf_val= normcdf(z);
+	cout<<"cdf_val"<<cdf_val<<endl;
 	pdf_val= normpdf(z);
+	cout<<"pdf_val"<<pdf_val<<endl;
 	val= (1./sigma) * (pdf_val.array()/cdf_val.array());
-	deriv_loglike = Get_Cumulative_Val(idx_global_1, val, n);
-	deriv_loglike-=	Get_Cumulative_Val(idx_global_2, val, n);
+	cout<<"val"<<val<<endl;
+	cout<<"sigma"<<sigma<<endl;
+	coef = Get_Cumulative_Val(idx_global_1, val, n);
+	cout<<"cum1"<<endl<<coef<<endl;
+	cout<<endl<<endl<<endl<<endl<<idx_global_2<<endl<<endl;
+	coef2=Get_Cumulative_Val(idx_global_2, val, n);
+		cout<<"val"<<val<<endl;
+
+	cout<<"coef2"<<endl<<coef2<<endl;
+	coef= coef - coef2;
+	cout<<"deriv"<<endl<<coef<<endl;
+	deriv_loglike=coef;
 	return deriv_loglike;
 }
 

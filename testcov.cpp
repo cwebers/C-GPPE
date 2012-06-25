@@ -38,9 +38,10 @@ int main()
 	ind_t<<0,0,1,1;
 	ind_x<<0,1,0,1;
 
-	//g.Approx_Gppe_Laplace(new CovSEard,new CovSEard, theta_x, theta_t, sigma,
-	//t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-	double loglike= g.log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
+	g.Approx_Gppe_Laplace(new CovSEard,new CovSEard, theta_x, theta_t, sigma,
+	t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+	//cout<< g.log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
+	//cout<<g.GetKx()<<endl;
 	return 0;
 
 }
