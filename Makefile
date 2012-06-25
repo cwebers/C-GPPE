@@ -17,3 +17,6 @@ Gppe.o :Gppe.cpp Gppe.h
 	
 Tool.o :Tool.cpp Tool.h
 	${COMP} ${OPTIONS} Tool.cpp
+
+clean:
+	rm -rf *.o test
