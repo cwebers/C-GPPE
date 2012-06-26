@@ -23,8 +23,11 @@ int testapproc_gppe_laplace_fast()
     double sigma = 0.1;
     Gppe g = Gppe();
     TypePair all_pairs(2);
-    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4), theta_x(4), theta_t(3), f(6);
+    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3);
+    VectorXd theta_x=VectorXd::Zero(4);
+    VectorXd theta_t=VectorXd::Zero(3);
+    VectorXd f=VectorXd::Zero(6);
     t(0, 0) = -0.7258;
     t(0, 1) = -1.9623;
     t(1, 0) = -0.3078;
@@ -46,10 +49,14 @@ int testapproc_gppe_laplace_fast()
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
 
-    g.Approx_Gppe_Laplace(new CovSEard,new CovSEard, theta_x, theta_t, sigma,
+    g.Approx_Gppe_Laplace(new CovSEard(),new CovSEard(), theta_x, theta_t, sigma,
     t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-   // double loglike = g.log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2, N);
-    return 0;
+  // double loglike = g.log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2,M, N);
+   			cout<<"W"<<endl<<g.GetW()<<endl;
+			cout<<"L"<<endl<<g.GetL()<<endl;
+			cout<<"Kinv"<<endl<<g.GetKinv()<<endl;
+			cout<<"f"<<endl<<g.Getf()<<endl;
+   return 0;
 
 }
 
@@ -57,7 +64,7 @@ int testapproc_gppe_laplace_fast()
 //Test in order to choose an adaptate support for all_pairs
 int testVectors()
 {
-    TypePair mat(2);
+    TypePair lat(2);
     int n = 10;
     VectorXd v1(n), v2(n), v3(3);
     v1 << 0, 1, 2, 3, 4, 5, 6, 7, 8, 9;
@@ -81,7 +88,7 @@ int testvoidfunctions()
     {
         t4(z) = 1 ;
     }
-    t5(0) = 12;
+    t5(0) = 12;/*
     mat(0, 0) =   1.9546;
     mat(0, 1) =   1.5274;
     mat(1, 0) =  -0.8292;
@@ -105,13 +112,13 @@ int testvoidfunctions()
     mat(10, 0) =  0.5883;
     mat(10, 1) =  0.0024;
     mat(11, 0) =  1.7972;
-    mat(11, 1) = -0.1446;
+    mat(11, 1) = -0.1446;*/
 
     t1(0) = 1;
     t1(1) = 15;
     t2(0) = 1;
     t2(1) = 15;
-    CovSEard a = CovSEard();
+   // CovSEard a = CovSEard();
     //CovNoise b=CovNoise(t5);
 //CovSum mafunc=CovSum(new CovSEard,new CovSEard,t4);
     //CovSEard mafunc=CovSEard();
@@ -401,12 +408,14 @@ int testCovSum()
 
 int main()
 {
-    //testCovSum();
-    //testCovNoise();
-    //testCoSEiso();
-    //testCovLINard();
-    //testCovSEard();
-    //testvoidfunctions();
+    testCovSum();
+    testCovNoise();
+    testCoSEiso();
+    testCovLINard();
+    testCovSEard();
+    testVectors();
+    testvoidfunctions();
     testapproc_gppe_laplace_fast();
+
 }
 

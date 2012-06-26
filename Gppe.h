@@ -43,7 +43,7 @@ class Gppe
 	//void Get_Predictive_Utility();
 	void Approx_Gppe_Laplace(Covfunc *covfunc_t,Covfunc *covfunc_x,
     VectorXd theta_x,VectorXd theta_t,double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, VectorXd ind_t,VectorXd ind_x,int M,int N);
-	double log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int N);
+	double log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int M,int N);
 	VectorXd deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 	MatrixXd deriv2_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 

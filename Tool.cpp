@@ -14,7 +14,7 @@
 
 VectorXd ind2global(VectorXd vec,int j,int N)
 {
- 	return vec.array()+j*N;
+ 	return vec.array()+j*N-1;
 }
 
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2)
@@ -30,12 +30,13 @@ MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2)
 	return res;
 }
 
-void GetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2)
+MatrixXd SetMatGenIdx( MatrixXd mat,VectorXd t1, VectorXd t2)
 {
 	for(int i=0;i<t1.rows();i++)
 	{
 		mat(t1(i))=t2(i);
 	}
+	return mat;
 }
 
 VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1)
@@ -49,8 +50,8 @@ VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1)
 }
 
 VectorXd GetVec(VectorXd vec,VectorXd t1)
-{
-	VectorXd res(t1.rows());
+{	
+	VectorXd res=VectorXd::Zero(t1.rows());
 	for(int i=0;i<t1.rows();i++)
 	{
 		res(i)=vec(t1(i));

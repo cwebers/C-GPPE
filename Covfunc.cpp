@@ -56,7 +56,7 @@ void Covfunc::SetTheta(VectorXd t)
 
 MatrixXd Covfunc::ComputeGrandMatrix(MatrixXd fea)
 {
-	MatrixXd cov(fea.rows(),fea.rows());
+	MatrixXd cov=MatrixXd::Zero(fea.rows(),fea.rows());
 	for(int i=0;i<fea.rows();i++)
 	{
 		for(int j=0;j<fea.rows();j++)
@@ -69,7 +69,7 @@ MatrixXd Covfunc::ComputeGrandMatrix(MatrixXd fea)
 
 MatrixXd Covfunc::Compute(MatrixXd p, MatrixXd q)
 {
-	MatrixXd cov(p.rows(),p.rows());
+	MatrixXd cov=MatrixXd::Zero(p.rows(),p.rows());
 	for(int i=0;i<p.rows();i++)
 	{
 		for(int j=0;j<p.rows();j++)

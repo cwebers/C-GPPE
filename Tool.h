@@ -35,7 +35,7 @@ VectorXd normpdf(VectorXd x);
 VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
 int sub2ind(VectorXd dim, int row, int col);
 VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
-void GetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
+MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
 VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);
 
 
