@@ -12,9 +12,10 @@
 // under the License.
 #include "Gppe.h"
 
-Gppe::Gppe()
+Gppe::Gppe(Covfunc *Covfunc_t,Covfunc *Covfunc_x)
 {
-
+	covfunc_t=Covfunc_t;
+	covfunc_x=Covfunc_x;
 }
 
 
@@ -68,7 +69,45 @@ MatrixXd Gppe::GetKx()
 {
 	return Kx;
 }
-void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
+
+
+void Gppe::Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
+MatrixXd tstar, MatrixXd test_pair)
+{
+	int Kt_ss=1;
+	double sigma_star, val;
+	MatrixXd Kx_star,Kx_star_star,kstar,Kss,Css;
+	MatrixXd Kt_star=covfunc_t->Compute(t,tstar);
+
+
+	
+	Kx_star = GetMatRow(Kx,test_pair.transpose());
+	cout<<Kt_star.cols()<<endl;
+	
+	Kx_star_star = GetMat(Kx,test_pair.transpose(),test_pair.transpose()); // test to test
+	dsp(Kt_star,"Kt_star");
+	dsp(Kx_star,"Kx_star");
+	kstar = Kron(Kt_star, Kx_star);
+	
+	kstar =GetMatRow(kstar,idx_global);
+	Kss = Kt_ss * Kx_star_star;
+
+
+	mustar = kstar.transpose()*Kinv*GetVec(f,idx_global);
+	dsp(mustar,"mustar");
+	Css    = Kss - kstar.transpose()*W*llt.solve(Kinv*kstar); 
+
+	sigma_star = sqrt(Css(0,0) + Css(1,1) - 2*Css(0,1) + pow(sigma,2));
+	cout<<sigma_star<<endl;
+	val = ( mustar(0) - mustar(1) )/sigma_star;
+	p   = normcdf(val);
+	cout<<"p"<<endl<<p<<endl;
+}
+
+
+
+
+void Gppe::Approx_Gppe_Laplace(
 			VectorXd theta_x,VectorXd theta_t, double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,
 			VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, 
 			VectorXd ind_t,VectorXd ind_x,int M,int N)
@@ -81,15 +120,12 @@ void Gppe::Approx_Gppe_Laplace(Covfunc *Covfunc_t,Covfunc *Covfunc_x,
 	VectorXd fvis=VectorXd::Zero(idx_global.rows());
 	VectorXd deriv;
 	double loglike=0;
-	LLT<MatrixXd> llt;
 
-	Covfunc_t->SetTheta(theta_t);
-	Covfunc_x->SetTheta(theta_x);
+	covfunc_t->SetTheta(theta_t);
+	covfunc_x->SetTheta(theta_x);
 
-	MatrixXd Kt=Covfunc_t->ComputeGrandMatrix(t);
-	Kx=Covfunc_x->ComputeGrandMatrix(x);
-	cout<<"KT"<<endl<<Kt<<endl;
-	cout<<"Kx"<<endl<<Kx<<endl;
+	MatrixXd Kt=covfunc_t->ComputeGrandMatrix(t);
+	Kx=covfunc_x->ComputeGrandMatrix(x);
 
 	MatrixXd K= GetMat(Kt,ind_t,ind_t).array()*GetMat(Kx,ind_x,ind_x).array();
 	loglike = log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2,M, N);

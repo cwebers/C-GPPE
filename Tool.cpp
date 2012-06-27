@@ -12,6 +12,40 @@
 // under the License.
 #include "Tool.h"
 
+
+
+
+void dsp(MatrixXd a,string s)
+{
+	cout<<endl<<endl<<s<<"	  Size:"<<a.rows()<<" X "<<a.cols()<<endl<<a<<endl<<endl;
+
+}
+
+
+MatrixXd GetMatRow(MatrixXd mat,VectorXd t1)
+{
+	MatrixXd res=MatrixXd::Zero(t1.rows(),mat.cols());
+	for(int i=0;i<t1.rows();i++)
+	{
+		res.row(i)=mat.row(t1(i));
+	}
+	return res;
+}
+MatrixXd Kron(MatrixXd mat1, MatrixXd mat2)
+{
+	MatrixXd mat3=MatrixXd::Zero(mat1.rows()*mat2.rows(), mat1.cols()*mat2.cols());
+	for (int i = 0; i < mat1.rows(); i++) 
+	{
+  		for (int j = 0; j < mat1.cols(); j++) 
+  		{	
+    		mat3.block(i*mat2.rows(), j*mat2.cols(), mat2.rows(), mat2.cols()) =  mat1(i,j)*mat2;
+  		}
+	}
+	return mat3;
+}
+
+
+
 VectorXd ind2global(VectorXd vec,int j,int N)
 {
  	return vec.array()+j*N-1;

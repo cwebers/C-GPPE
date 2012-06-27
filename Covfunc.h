@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <time.h>
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;

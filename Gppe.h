@@ -26,7 +26,7 @@ using Eigen::SparseMatrix;
 class Gppe
 {
 	public :
-	Gppe();// Default Contructor
+	Gppe(Covfunc *covfunc_t,Covfunc *covfunc_x);// Default Contructor
 	Gppe(VectorXd fnew,MatrixXd Kxnew,MatrixXd Kinvnew,MatrixXd Wnew,MatrixXd Lnew); //Constructor with parameters
 	Gppe(const Gppe & g); //Contructor by recopy
 	~Gppe(); // Destructor
@@ -38,10 +38,10 @@ class Gppe
 
 
 
-
-	//void Predict_Gppe_Laplace();
 	//void Get_Predictive_Utility();
-	void Approx_Gppe_Laplace(Covfunc *covfunc_t,Covfunc *covfunc_x,
+	void Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
+	MatrixXd tstar, MatrixXd test_pair);
+	void Approx_Gppe_Laplace(
     VectorXd theta_x,VectorXd theta_t,double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, VectorXd ind_t,VectorXd ind_x,int M,int N);
 	double log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int M,int N);
 	VectorXd deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
@@ -57,5 +57,8 @@ class Gppe
 	 	MatrixXd L;
 	 	Covfunc *covfunc_x;
 	 	Covfunc *covfunc_t;
+	 	double p;
+	 	VectorXd mustar;
+		LLT<MatrixXd> llt;
 };
 #endif

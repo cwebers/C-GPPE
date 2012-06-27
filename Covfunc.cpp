@@ -69,10 +69,10 @@ MatrixXd Covfunc::ComputeGrandMatrix(MatrixXd fea)
 
 MatrixXd Covfunc::Compute(MatrixXd p, MatrixXd q)
 {
-	MatrixXd cov=MatrixXd::Zero(p.rows(),p.rows());
+	MatrixXd cov=MatrixXd::Zero(p.rows(),q.rows());
 	for(int i=0;i<p.rows();i++)
 	{
-		for(int j=0;j<p.rows();j++)
+		for(int j=0;j<q.rows();j++)
 		{
 			cov(i,j)=Evaluate(p.row(i),q.row(j));
 		}
