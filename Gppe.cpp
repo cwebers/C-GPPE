@@ -81,12 +81,10 @@ MatrixXd tstar, MatrixXd test_pair)
 
 
 	
-	Kx_star = GetMatRow(Kx,test_pair.transpose());
+	Kx_star = GetMatRow(Kx,test_pair.transpose()); //maybe need some transpose?
 	cout<<Kt_star.cols()<<endl;
 	
 	Kx_star_star = GetMat(Kx,test_pair.transpose(),test_pair.transpose()); // test to test
-	dsp(Kt_star,"Kt_star");
-	dsp(Kx_star,"Kx_star");
 	kstar = Kron(Kt_star, Kx_star);
 	
 	kstar =GetMatRow(kstar,idx_global);
@@ -94,14 +92,12 @@ MatrixXd tstar, MatrixXd test_pair)
 
 
 	mustar = kstar.transpose()*Kinv*GetVec(f,idx_global);
-	dsp(mustar,"mustar");
 	Css    = Kss - kstar.transpose()*W*llt.solve(Kinv*kstar); 
 
 	sigma_star = sqrt(Css(0,0) + Css(1,1) - 2*Css(0,1) + pow(sigma,2));
 	cout<<sigma_star<<endl;
 	val = ( mustar(0) - mustar(1) )/sigma_star;
 	p   = normcdf(val);
-	cout<<"p"<<endl<<p<<endl;
 }
 
 
@@ -117,6 +113,7 @@ void Gppe::Approx_Gppe_Laplace(
 	M=all_pairs.rows();
 	int n=M*N;
 	 f=VectorXd::Zero(n);
+	 dsp(f,"f");
 	VectorXd fvis=VectorXd::Zero(idx_global.rows());
 	VectorXd deriv;
 	double loglike=0;

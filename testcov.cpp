@@ -14,6 +14,66 @@
 #include "Covfunc.h"
 #include "Gppe.h"
 
+int bigapproc_gppe_laplace_fast()
+{
+	//clock_t start, end;
+	//double elapsed;
+	//start = clock();
+    //generating the data naively
+    int M = 4;
+    int N = 4;
+    double sigma = 0.1;
+    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    TypePair all_pairs(4);
+    VectorXd idx_global_1(18), idx_global_2(18), idx_global(12), ind_t(12), ind_x(12);
+    MatrixXd pairs(6, 2),pairs2(6, 2),pairs3(6, 2),pairs4(6, 2), t(3, 2), x(4, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd f ;
+   
+   
+   t<<   -0.7258 ,  -0.9332,
+   		-0.3078 ,   1.4168,
+   		 0.2501 ,   0.8194;
+   		 
+   		 
+   	x<<   -4.0911,  0.4715,   -7.3005,
+   		-6.3481 ,   4.8933,    5.8177,
+    	1.0004 ,   4.3248,    2.3851,
+   		-4.7591,   -3.7461,   -6.3772;
+    tstar<< 0.2501, 1.4168;
+     pairs<< 3,4,4,2,3,2,1,4,1,3,1,2;
+     all_pairs(0)=pairs;
+    pairs2 << 3,4,4,2,3,2,4,1,3,1,1,2;
+    all_pairs(1)=pairs2;
+    
+    pairs3<<  4,3,4,2,3,2,4,1,3,1,2,1; 
+    all_pairs(2)=pairs3;
+    pairs4<<  3,4,2,4,2,3,1,4,3,1,2,1;
+    all_pairs(3)=pairs4;
+
+
+    idx_global_1 <<2,0,0,3,2,0,6,7,7,6,4,6,11,10,9,10,11,11;
+    idx_global_2 <<3,1,2,1,1,3,4,4,5,7,5,5,10,8,8,9,8,9;
+    idx_global << 0, 1, 2, 3,4,5,6,7,8,9,10,11;
+    ind_t <<0,0,0,0,1,1,1,1,2,2,2,2;
+    ind_x <<0,1,2,3,0,1,2,3,0,1,2,3;
+	cout<<"Hello"<<endl;
+    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+                          t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+    
+    dsp(g.GetW(),"W");
+    dsp(g.GetL(),"L");
+    dsp(g.GetKinv(),"Kinv");
+    dsp(g.Getf(),"f");
+  
+  
+      // end = clock();
+    // elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+  //   cout << elapsed << endl;
+  return 0;
+}
+
 int testpredict_gppe_laplace_fast()
 {
     //generating the data naively
@@ -132,11 +192,9 @@ int testapproc_gppe_laplace_fast()
     idx_global << 0, 1, 2, 3;
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
-	for (int incr=0;incr<10000;incr++)
-	{
+    
     g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
                           t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-    }
     dsp(g.GetW(),"W");
     dsp(g.GetL(),"L");
     dsp(g.GetKinv(),"Kinv");
@@ -381,7 +439,8 @@ int main()
     //testVectors();
     //testvoidfunctions();
     //testpredict_gppe_laplace_fast();
-    testapproc_gppe_laplace_fast();
+    //testapproc_gppe_laplace_fast();
+	bigapproc_gppe_laplace_fast();
 
 }
 
