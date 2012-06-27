@@ -97,6 +97,9 @@ void InitMatrix(MatrixXd & mat)
 //Test approc_gppe_laplace_fast functions of the Gppe class need some fixing
 int testapproc_gppe_laplace_fast()
 {
+	//clock_t start, end;
+	//double elapsed;
+	//start = clock();
     //generating the data naively
     int M = 3;
     int N = 2;
@@ -129,14 +132,21 @@ int testapproc_gppe_laplace_fast()
     idx_global << 0, 1, 2, 3;
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
-
+	for (int incr=0;incr<10000;incr++)
+	{
     g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
                           t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-    cout << "W" << endl << g.GetW() << endl;
-    cout << "L" << endl << g.GetL() << endl;
-    cout << "Kinv" << endl << g.GetKinv() << endl;
-    cout << "f" << endl << g.Getf() << endl;
-    return 0;
+    }
+    dsp(g.GetW(),"W");
+    dsp(g.GetL(),"L");
+    dsp(g.GetKinv(),"Kinv");
+    dsp(g.Getf(),"f");
+  
+  
+      // end = clock();
+    // elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+  //   cout << elapsed << endl;
+  return 0;
 
 }
 
@@ -370,8 +380,8 @@ int main()
     //testCovSEard();
     //testVectors();
     //testvoidfunctions();
-    testpredict_gppe_laplace_fast();
-    //testapproc_gppe_laplace_fast();
+    //testpredict_gppe_laplace_fast();
+    testapproc_gppe_laplace_fast();
 
 }
 
