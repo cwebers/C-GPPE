@@ -103,17 +103,15 @@ MatrixXd tstar, MatrixXd test_pair)
 
 
 
-void Gppe::Approx_Gppe_Laplace(
-			VectorXd theta_x,VectorXd theta_t, double sigma,MatrixXd t,MatrixXd x,TypePair all_pairs,
-			VectorXd idx_global,VectorXd idx_global_1,VectorXd idx_global_2, 
-			VectorXd ind_t,VectorXd ind_x,int M,int N)
+void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& t,const MatrixXd &x,const TypePair & all_pairs,
+			const VectorXd & idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, 
+			const VectorXd& ind_t,const VectorXd& ind_x,int M,int N)
 {
 	//Parameters function initialization
 	double eps=1E-6, psi_new,psi_old;
 	M=all_pairs.rows();
 	int n=M*N;
 	 f=VectorXd::Zero(n);
-	 dsp(f,"f");
 	VectorXd fvis=VectorXd::Zero(idx_global.rows());
 	VectorXd deriv;
 	double loglike=0;
