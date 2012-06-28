@@ -70,6 +70,39 @@ MatrixXd Gppe::GetKx()
 	return Kx;
 }
 
+VectorXd Gppe::Getmustar()
+{
+	return mustar;
+}
+
+VectorXd Gppe::Getvarstar()
+{
+	return varstar;
+}
+void Gppe::Predictive_Utility_Distribution(MatrixXd t,MatrixXd tstar, int N, VectorXd idx_global)
+{
+	int Kt_ss=1;
+	VectorXd idx_xstar(N);
+	MatrixXd Kstar,Kx_star_star,Kx_star,Kss,Css,Kt_star;
+	for(int i=0;i<N;i++)
+	{
+		idx_xstar(i)=i;
+	}
+	
+	Kt_star=covfunc_t->Compute(t,tstar);
+	Kx_star=GetMatRow(Kx,idx_xstar);//need to check for tranpose later?
+	Kx_star_star=GetMat(Kx,idx_xstar, idx_xstar);
+	
+	Kstar=Kron(Kt_star,Kx_star);
+
+	Kstar=GetMatRow(Kstar,idx_global);
+
+	Kss=Kt_ss*Kx_star_star;
+	mustar=Kstar.transpose()*Kinv*GetVec(f,idx_global);
+	Css= Kss- Kstar.transpose()*W*llt.solve(Kinv*Kstar);
+	varstar=Css.diagonal();
+}
+
 
 void Gppe::Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
 MatrixXd tstar, MatrixXd test_pair)

@@ -35,10 +35,12 @@ class Gppe
 	MatrixXd GetKinv();
 	MatrixXd GetW();
 	MatrixXd GetL();
+	VectorXd Getmustar();
+	VectorXd Getvarstar();
 
 
 
-	//void Get_Predictive_Utility();
+	void Predictive_Utility_Distribution(MatrixXd t,MatrixXd test_t, int N, VectorXd idx_global);
 	void Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
 	MatrixXd tstar, MatrixXd test_pair);
 	void Approx_Gppe_Laplace(const VectorXd& theta_x,const VectorXd& theta_t,
@@ -59,6 +61,7 @@ class Gppe
 	 	Covfunc *covfunc_t;
 	 	double p;
 	 	VectorXd mustar;
+	 	VectorXd varstar;
 		LLT<MatrixXd> llt;
 };
 #endif
