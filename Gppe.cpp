@@ -79,6 +79,35 @@ VectorXd Gppe::Getvarstar()
 {
 	return varstar;
 }
+
+
+void Gppe::Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs,
+			const VectorXd & idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, 
+			const VectorXd& ind_t,const VectorXd& ind_x,const MatrixXd & test_t,const MatrixXd& idx_pairs,const VectorXd& ftrue, const VectorXd& ytrue)
+{
+	int N=x.rows();
+	int Mtrain=train_t.rows();
+    int Npairs= idx_pairs.rows();
+    MatrixXd Fstar=MatrixXd::Zero(N,Npairs);
+    VectorXd pair;
+    VectorXd P=VectorXd::Zero(Npairs);
+
+    Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
+    
+    for(int i=0;i<Npairs;i++)
+    {
+    	pair=idx_pairs.row(i);
+    	Predict_Gppe_Laplace(sigma, train_t,x,idx_global,ind_t, ind_x,
+		 test_t, pair);
+		 P(i)=p;
+    }   
+}
+
+
+
+
+
 void Gppe::Predictive_Utility_Distribution(MatrixXd t,MatrixXd tstar, int N, VectorXd idx_global)
 {
 	int Kt_ss=1;
