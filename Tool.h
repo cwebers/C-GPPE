@@ -27,11 +27,13 @@ using Eigen::Matrix;
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 
 void dsp(MatrixXd a,string s);
+void dsp(double a,string s);
 MatrixXd Kron(MatrixXd mat1, MatrixXd mat2);
 VectorXd ind2global(VectorXd vec,int j,int N);
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2);
 MatrixXd GetMatRow(MatrixXd mat,VectorXd t1);
-
+MatrixXd SetNaN(MatrixXd a);
+VectorXd MyNaNMean(MatrixXd a);
 
 VectorXd GetVec(VectorXd vec,VectorXd t1);
 double normcdf(double x);
@@ -43,7 +45,7 @@ int sub2ind(VectorXd dim, int row, int col);
 VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
 MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
 VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);
-
+VectorXd GetDiff(VectorXd a,VectorXd b);
 
 
 #endif

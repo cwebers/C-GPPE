@@ -14,6 +14,28 @@
 #include "Covfunc.h"
 #include "Gppe.h"
 
+int testNaNValue()
+{
+	//TypePair mat(1);
+	MatrixXd y;
+	int incr=0;
+	MatrixXd z= MatrixXd::Zero(5,2);
+	for (int i=0;i<z.rows();i++)
+	{
+		for (int j=0;j<z.cols();j++)
+			{	
+				incr++;
+		 		z(i,j)=incr;
+			}
+	}
+	z(1,1)=pow(-1,0.5);	//z(1,0)=pow(-1,0.5);
+
+	dsp(z.row(1).mean(),"using eigen");
+	dsp(z,"z");
+	dsp(MyNaNMean(z),"mean of z without the NaN value");
+
+	return 0;
+}
 
 int testpredictive_utility()
 {
@@ -497,7 +519,8 @@ int main()
     //testpredict_gppe_laplace_fast();
     //testapproc_gppe_laplace_fast();
 	//bigapproc_gppe_laplace_fast();
-	testpredictive_utility();
+	//testpredictive_utility();
+	testNaNValue();
 
 }
 

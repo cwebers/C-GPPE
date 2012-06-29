@@ -13,12 +13,63 @@
 #include "Tool.h"
 
 
+VectorXd MyNaNMean(MatrixXd a)
+{
+	VectorXd res=VectorXd::Zero(a.rows());
+	int incr;
+	double mean=0;
+	for (int i=0;i<a.rows();i++)
+	{	
+		incr=0;
+		mean=0;
+		for (int j=0;j<a.cols();j++)
+		{
+				if (a(i,j)!=a(i,j))
+					incr++;
+				else
+					mean+=a(i,j);
+		}
+		mean=mean/(a.cols()-incr);
+		res(i)=mean;
+	}
+	return res;
+}
+
+MatrixXd SetNaN(MatrixXd a)
+{
+	for (int i=0;i<a.rows();i++)
+	{
+		for (int j=0;j<a.cols();j++)
+		{
+				a(i,j)=pow(-1,0.5);
+		}
+	}
+	return a;
+	
+}
+
+
+VectorXd GetDiff(VectorXd a,VectorXd b)
+{
+	VectorXd diff=VectorXd::Zero(a.rows());
+	for (int i=0;i<a.rows();i++)
+	{
+		if(a(i)!=b(i))
+			diff(i)=1;
+	}
+	return diff;
+}
 
 
 void dsp(MatrixXd a,string s)
 {
 	cout<<endl<<endl<<s<<"	  Size:"<<a.rows()<<" X "<<a.cols()<<endl<<a<<endl<<endl;
 
+}
+
+void dsp(double  a,string s)
+{
+	cout<<endl<<endl<<s<<" : "<<a<<endl<<endl;
 }
 
 

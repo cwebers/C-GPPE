@@ -39,6 +39,8 @@ class Gppe
 	VectorXd Getvarstar();
 
 
+	void Elicit();
+
 	void Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs,
 			const VectorXd & idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, 
 			const VectorXd& ind_t,const VectorXd& ind_x,const MatrixXd & test_t,const MatrixXd& idx_pairs,const VectorXd& ftrue, const VectorXd& ytrue);
