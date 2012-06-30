@@ -93,12 +93,13 @@ void Gppe::Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& th
 	int Mtrain=train_t.rows();
     int Npairs= idx_pairs.rows();
     VectorXd fstar;
-    MatrixXd Fstar=MatrixXd::Zero(N,Npairs);
-    Fstar=SetNaN(Fstar);
+    //MatrixXd Fstar=MatrixXd::Zero(N,Npairs);
+    //Fstar=SetNaN(Fstar);
     VectorXd pair;
     VectorXd P=VectorXd::Zero(Npairs);
     VectorXd ypred=VectorXd::Zero(Npairs);
-
+    VectorXd sum=VectorXd::Zero(N);
+    VectorXd count=VectorXd::Zero(N);
     Approx_Gppe_Laplace( theta_x, theta_t, sigma,
     train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
     
@@ -108,8 +109,13 @@ void Gppe::Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& th
     	Predict_Gppe_Laplace(sigma, train_t,x,idx_global,ind_t, ind_x,
 		 test_t, pair);
 		 P(i)=p;
-		 Fstar(pair(0),i)=mustar(0);
-		 Fstar(pair(1),i)=mustar(1);
+		 //Fstar(pair(0),i)=mustar(0);
+		 //Fstar(pair(1),i)=mustar(1);
+		 sum(pair(0))+=mustar(0);
+		 count(pair(0))+=1;
+		 sum(pair(1))+=mustar(1);
+		 count(pair(1))+=1;
+		 
     }  
     
     for(int i=0;i<P.rows();i++)
@@ -118,7 +124,8 @@ void Gppe::Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& th
     		ypred(i)=1;
     } 
 
-fstar=MyNaNMean(Fstar);
+//fstar=MyNaNMean(Fstar);
+fstar=sum.array()/count.array();
     
 cout<<endl<<endl<<"error =  "<<(GetDiff(ytrue,ypred)).sum()/ytrue.rows();
   // need for a plot function here ?  
