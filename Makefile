@@ -1,4 +1,4 @@
-COMP	=g++ -I ../Eigen
+COMP	=g++ -I ../Eigen #-O3
 OPTIONS	=-c
 EXECUTABLE	=test
 OBJETS		=testcov.o Covfunc.o Gppe.o Tool.o

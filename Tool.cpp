@@ -12,6 +12,74 @@
 // under the License.
 #include "Tool.h"
 
+void unique(VectorXd& a, const VectorXd& b, const VectorXd& c)
+{	
+	bool check;		
+	VectorXd inter;
+	a.resize(1,1);
+	a<<b(0);
+	for(int i=0;i<b.rows();i++)
+	{
+		check=true;
+		for(int j=0;j<a.rows();j++)
+		{
+			if(b(i)==a(j))
+				check=false;
+		}
+		if(check)
+		{
+			inter.resize(a.rows()+1,a.cols());
+			inter<<a,b(i);
+			a=inter;
+		}
+	
+	}
+	
+	for(int k=0;k<b.rows();k++)
+	{
+		check=true;
+		for(int l=0;l<a.rows();l++)
+		{
+			if(c(k)==a(l))
+				check=false;
+		}
+		if(check)
+		{
+			inter.resize(a.rows()+1,a.cols());
+			inter<<a,c(k);
+			a=inter;
+		}
+	
+	}
+			
+					
+std::sort(a.col(0).data(), a.col(0).data() + a.rows());
+}
+
+void dsp(string s)
+{
+	cout<<endl<<endl<<s<<endl<<endl;
+}
+
+void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N)
+{
+	int M =all_pairs.rows();
+    VectorXd inter;
+
+	for(int j=0;j<M;j++)
+	{		
+
+			inter.resize(idx_global_1.rows()+ind2global(all_pairs(j).col(0), j, N).rows(),idx_global_1.cols());
+			inter<<idx_global_1,ind2global(all_pairs(j).col(0), j, N);
+			idx_global_1=inter;
+			
+			inter.resize(idx_global_2.rows()+ind2global(all_pairs(j).col(1), j, N).rows(),idx_global_2.cols());
+			inter<<idx_global_2,ind2global(all_pairs(j).col(1), j, N);
+			idx_global_2=inter;
+	}
+	
+}
+
 
 VectorXd MyNaNMean(MatrixXd a)
 {
@@ -99,7 +167,7 @@ MatrixXd Kron(MatrixXd mat1, MatrixXd mat2)
 
 VectorXd ind2global(VectorXd vec,int j,int N)
 {
- 	return vec.array()+j*N-1;
+ 	return vec.array()+j*N;
 }
 
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2)

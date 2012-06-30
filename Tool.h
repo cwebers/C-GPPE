@@ -26,8 +26,11 @@ using Eigen::Matrix;
 
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 
+void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
+void dsp(string s);
 void dsp(MatrixXd a,string s);
 void dsp(double a,string s);
+void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N);
 MatrixXd Kron(MatrixXd mat1, MatrixXd mat2);
 VectorXd ind2global(VectorXd vec,int j,int N);
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2);

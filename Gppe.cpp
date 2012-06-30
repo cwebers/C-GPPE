@@ -205,10 +205,11 @@ void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x,const VectorXd& theta_t,
 	Kx=covfunc_x->ComputeGrandMatrix(x);
 
 	MatrixXd K= GetMat(Kt,ind_t,ind_t).array()*GetMat(Kx,ind_x,ind_x).array();
+
 	loglike = log_likelihood(f, sigma, all_pairs, idx_global_1, idx_global_2,M, N);
 	Kinv=K.inverse();
 	psi_new = loglike - 0.5 * fvis.transpose()*Kinv*fvis; 
-	psi_old = -10E6;
+	psi_old = INT_MIN;
 	while((psi_new-psi_old)>eps)
 	{
 		psi_old=psi_new;
@@ -240,7 +241,6 @@ void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x,const VectorXd& theta_t,
 
 double Gppe::log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int M, int N)
 {
-	MatrixXd pairs;
 	M=all_pairs.rows();
 	VectorXd idx_1,idx_2,z;
 	double loglike=0;
@@ -248,12 +248,17 @@ double Gppe::log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd
 		{	
 			if(all_pairs(j).rows()==0)
 				continue;
-			pairs=all_pairs(j);
-			idx_1=ind2global(pairs.col(0),j,N);
-			idx_2=ind2global(pairs.col(1),j,N);
+			dsp("hello1");
+			idx_1=ind2global(all_pairs(j).col(0),j,N);
+			idx_2=ind2global(all_pairs(j).col(1),j,N);
+			dsp("hello2");
+			dsp(f,"f");
+			dsp(idx_1,"idx_1");
+			dsp(idx_2,"idx_2");
 			z=(GetVec(f,idx_1)-GetVec(f,idx_2))/sigma;
 			z=normcdf(z);
 			loglike+= log(z.array()).sum();
+			dsp("hello3");
 		}
 	return loglike;
 }

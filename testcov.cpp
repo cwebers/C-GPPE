@@ -14,6 +14,60 @@
 #include "Covfunc.h"
 #include "Gppe.h"
 
+int testgendata()
+{
+	int M=3,N=2;
+  TypePair all_pairs(2);
+    VectorXd idx_global_1, idx_global_2, idx_global, ind_t(4), ind_x(4);
+    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd f = VectorXd::Zero(6);
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    pairs << 0, 1;
+    tstar<< 0.2501, 1.4168;
+    all_pairs(0) = pairs;
+    all_pairs(1) = pairs;
+	compute_global_index(idx_global_1,idx_global_2,all_pairs, N);
+	dsp(idx_global_1,"idx_global_1");
+	dsp(idx_global_2,"idx_global_2");
+	
+	unique(idx_global,idx_global_1,idx_global_2);
+	
+	dsp(idx_global,"idx_global");
+
+	return 0;
+}
+
+
+
+
+int testmatrixmultiplication()
+{
+	clock_t start, end;
+	double elapsed;
+	start = clock();
+	MatrixXd A(5000,5000),B(5000,5000),C;
+	//A.setRandom();
+	//B.setRandom();
+	C=A*B;
+
+  
+    end = clock();
+     elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+     cout <<"Elapsed Time :"<<elapsed << endl;
+  return 0;
+  }
+
 int testNaNValue()
 {
 	//TypePair mat(1);
@@ -64,7 +118,7 @@ int testpredictive_utility()
     train_t<< -0.7258,-1.9623,
     			-0.3078,-0.9332,
     			0.2501,1.4158;
-    pairs << 1, 2;
+    pairs << 0, 1;
     test_pair << 0, 1;
     tstar<< 0.2501, 1.4168;
     all_pairs(0) = pairs;
@@ -173,7 +227,7 @@ int testpredict_gppe_laplace_fast()
     x(1, 0) = 6.1426;
     x(1, 1) = -6.3481;
     x(1, 2) = -4.7591;
-    pairs << 1, 2;
+    pairs << 0, 1;
     test_pair << 0, 1;
     tstar<< 0.2501, 1.4168;
     all_pairs(0) = pairs;
@@ -257,7 +311,7 @@ int testapproc_gppe_laplace_fast()
     x(1, 0) = 6.1426;
     x(1, 1) = -6.3481;
     x(1, 2) = -4.7591;
-    pairs << 1, 2;
+    pairs << 0, 1;
     tstar<< 0.2501, 1.4168;
     all_pairs(0) = pairs;
     all_pairs(1) = pairs;
@@ -268,11 +322,8 @@ int testapproc_gppe_laplace_fast()
     idx_global << 0, 1, 2, 3;
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
-    for (int incr=0;incr<10000;incr++)
-    {
     g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
                           t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-    }
     dsp(g.GetW(),"W");
     dsp(g.GetL(),"L");
     dsp(g.GetKinv(),"Kinv");
@@ -303,54 +354,9 @@ int testVectors()
 // Test voidfunctions
 int testvoidfunctions()
 {
-    VectorXd t1(2), t2(2), t3(3), t4(3), t5(1);
-    MatrixXd mat(12, 2);
-    for (int z = 0;z < 3;z++)
-    {
-        t4(z) = 1 ;
-    }
-    t5(0) = 12;/*
-mat(0, 0) = 1.9546;
-mat(0, 1) = 1.5274;
-mat(1, 0) = -0.8292;
-mat(1, 1) = 0.3836;
-mat(2, 0) = 0.9937;
-mat(2, 1) = -1.5854;
-mat(3, 0) = -1.5110;
-mat(3, 1) = -1.3003;
-mat(4, 0) = -2.3473;
-mat(4, 1) = 1.9326;
-mat(5, 0) = 1.2204;
-mat(5, 1) = - 2.3566;
-mat(6, 0) = 0.0001;
-mat(6, 1) = -0.0505;
-mat(7, 0) = - 0.1004;
-mat(7, 1) = - 1.6604;
-mat(8, 0) = 2.0236;
-mat(8, 1) = 2.3934;
-mat(9, 0) = 0.5493;
-mat(9, 1) = 1.0635;
-mat(10, 0) = 0.5883;
-mat(10, 1) = 0.0024;
-mat(11, 0) = 1.7972;
-mat(11, 1) = -0.1446;*/
-
-    t1(0) = 1;
-    t1(1) = 15;
-    t2(0) = 1;
-    t2(1) = 15;
-    // CovSEard a = CovSEard();
-    //CovNoise b=CovNoise(t5);
-//CovSum mafunc=CovSum(new CovSEard,new CovSEard,t4);
-    //CovSEard mafunc=CovSEard();
-    int k;
-    k = 5;
-
-// a.add(k);
-//cout<<mafunc.Evaluate(t1,t2)<<endl;
-    //cout<<a.ComputeGrandMatrix(mat)<<endl;
-//cout<<mafunc.ComputeGrandMatrix(mat)<<endl;
-    return 0;
+	int a=12;
+	//compute_global_index(a);
+	return 0;
 }
 
 
@@ -518,9 +524,10 @@ int main()
     //testvoidfunctions();
     //testpredict_gppe_laplace_fast();
     //testapproc_gppe_laplace_fast();
-	//bigapproc_gppe_laplace_fast();
+	//bigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
 	//testpredictive_utility();
-	testNaNValue();
-
+	//testNaNValue();
+	//testmatrixmultiplication();
+	testgendata();
 }
 
