@@ -80,8 +80,89 @@ VectorXd Gppe::Getvarstar()
 	return varstar;
 }
 
-void Gppe::Elicit()
+
+double Gppe::get_fbest(int N)
 {
+	VectorXd ftest;
+	double fbest;
+	
+	ftest=f.segment(f.rows()-N,N-1);
+	fbest=ftest.maxCoeff();
+	if(fbest!=fbest)
+		fbest=f.maxCoeff();
+	return fbest;
+}
+
+
+void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
+    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter)// ptr_query_func, ptr_loss_func)
+{
+	int N=x.rows();
+	int Mtrain=train_t.rows();
+	int M=Mtrain +1;
+	int Npairs=idx_pairs.rows();
+	//VectorXd is_selected(Npairs);
+	Matrix<bool,Dynamic,1> is_selected(Npairs);
+	is_selected.fill(false);
+	VectorXd loss=VectorXd::Zero(Maxiter+1);
+	VectorXd evoi(Npairs), ind_t, ind_x;
+	VectorXd idx_global_1, idx_global_2, idx_global;
+	compute_global_index(idx_global_1,idx_global_2,train_pairs, N);
+	unique(idx_global,idx_global_1,idx_global_2);
+	bool stop=false;
+	double foo, val, idx_good;
+	int count=0;
+	MatrixXd t;
+	
+	
+	t.resize(M,train_t.cols());
+	t<<train_t,test_t;
+	TypePair inter(M);
+	inter<<train_pairs;//need to check this entry later	
+	
+	for(int iter=0;iter<=Maxiter;iter++)
+	{	
+	
+		Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    	t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
+	
+	
+		Predictive_Utility_Distribution(t, test_t,N,idx_global );
+	
+		std::ptrdiff_t idxbest;
+		foo = mustar.maxCoeff(&idxbest);
+		double fbest=get_fbest(N);
+	
+		for(int i=0;i<Npairs;i++)
+		{
+			if(is_selected(i))
+			{
+				evoi(i)=INT_MIN;
+				continue;
+			}
+			VectorXd test_pair=idx_pairs.row(i);
+			//evoi(i)=expected_voi();
+		}
+		
+		std::ptrdiff_t query_idx;
+		val = evoi.maxCoeff(&query_idx);
+		idx_good=find(evoi,val);
+		//evoi is a vector, so there isn't any multiple index argument
+		//and no need for the Lgood check stuff
+		is_selected(query_idx)=false;
+		
+		
+		
+		
+		
+		
+		count++;
+	}
+	
+	
+	
+	
+	
 }
 
 

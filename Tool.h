@@ -24,8 +24,11 @@ using Eigen::SparseMatrix;
 using Eigen::Dynamic;
 using Eigen::Matrix;
 
+
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 
+void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx );
+int find(const MatrixXd& a, double val );
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
 void dsp(string s);
 void dsp(MatrixXd a,string s);
@@ -44,7 +47,7 @@ VectorXd normcdf(VectorXd x);
 double normpdf(double x);
 VectorXd normpdf(VectorXd x);
 VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
-int sub2ind(VectorXd dim, int row, int col);
+int sub2ind(int dimrow,int dimcol, int row, int col);
 VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
 MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
 VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);

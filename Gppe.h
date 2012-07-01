@@ -39,7 +39,8 @@ class Gppe
 	VectorXd Getvarstar();
 
 
-	void Elicit();
+	void Elicit(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
+    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter);//, ptr_query_func, ptr_loss_func);
 
 	void Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs,
 			const VectorXd & idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, 
@@ -58,8 +59,8 @@ class Gppe
 	VectorXd deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 	
 	MatrixXd deriv2_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
-
-	//void Prediction_New_User();
+	
+	double get_fbest(int N);
 	//Variables
 	private :
 		VectorXd f;

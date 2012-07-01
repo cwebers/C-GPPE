@@ -12,6 +12,46 @@
 // under the License.
 #include "Tool.h"
 
+
+
+void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx )
+{
+	ind_i=VectorXd::Zero(idx.rows());
+	ind_j=VectorXd::Zero(idx.rows());
+	int inter;
+	
+	for(int i=0;i<idx.rows();i++)
+	{
+	inter=((int)idx(i))%((int)dimrow);
+	ind_i(i)=inter;
+	inter=idx(i)/dimrow;
+	ind_j(i)=inter;
+	}
+}
+
+
+int find(const MatrixXd& a,double  val)
+{
+	int idx=0,i=0,j=0, count=0;
+	bool found=false;
+	while(i<a.rows()&&found==false)
+	{	
+		j=0;
+		while(j<a.cols()&&found==false)
+		{
+			if(a(i,j)==val)
+			{
+				found=true;
+				idx=sub2ind(a.rows(),a.cols(), i, j);
+			}
+			count++;
+			j++;
+		}
+		i++;
+	}	
+	return idx;
+}
+
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c)
 {	
 	bool check;		

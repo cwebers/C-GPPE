@@ -14,6 +14,14 @@
 #include "Covfunc.h"
 #include "Gppe.h"
 
+int findvalue()
+{
+	MatrixXd z=MatrixXd::Zero(10,10);
+	z(1,0)=18;
+	cout<<find(z,18)<<endl;
+	return 0;
+}
+
 int testgendata()
 {
 	int M=3,N=2;
@@ -528,6 +536,7 @@ int main()
 	//testpredictive_utility();
 	//testNaNValue();
 	//testmatrixmultiplication();
-	testgendata();
+	findvalue();
+	//testgendata();
 }
 
