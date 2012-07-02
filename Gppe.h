@@ -35,10 +35,18 @@ class Gppe
 	MatrixXd GetKinv();
 	MatrixXd GetW();
 	MatrixXd GetL();
+	LLT<MatrixXd> Getllt();
 	VectorXd Getmustar();
 	VectorXd Getvarstar();
+	double Getp();
 
+double maximum_expected_improvement(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,
+const MatrixXd& t, const MatrixXd & x,const VectorXd& idx_global,const VectorXd& ind_t,const VectorXd& ind_x, MatrixXd tstar, int N,double fbest);
 
+	double expected_voi(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,
+              const MatrixXd& t, const MatrixXd & x,const TypePair& train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest);
+	
+	
 	void Elicit(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
     , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter);//, ptr_query_func, ptr_loss_func);
 

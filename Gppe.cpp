@@ -60,6 +60,11 @@ MatrixXd Gppe::GetL()
 	return L;
 }
 
+LLT<MatrixXd> Gppe::Getllt()
+{
+	return llt;
+}
+
 MatrixXd Gppe::GetKinv()
 {
 	return Kinv;
@@ -80,6 +85,11 @@ VectorXd Gppe::Getvarstar()
 	return varstar;
 }
 
+double Gppe::Getp()
+{
+	return p;
+}
+
 
 double Gppe::get_fbest(int N)
 {
@@ -93,6 +103,92 @@ double Gppe::get_fbest(int N)
 	return fbest;
 }
 
+double Gppe::maximum_expected_improvement(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,
+const MatrixXd& t, const MatrixXd & x,const VectorXd& idx_global,const VectorXd& ind_t,const VectorXd& ind_x, MatrixXd tstar, int N,double fbest)
+{
+	VectorXd idx_xstar(N);
+	for(int i=0;i<N;i++)
+	{
+		idx_xstar(i)=i;
+	}
+	int Kt_ss=1;
+	double  mei;
+	MatrixXd Kx_star,Kx_star_star,kstar,Kss,Css;
+	MatrixXd Kt_star=covfunc_t->Compute(t,tstar);
+
+
+	
+	Kx_star = GetMatRow(Kx,idx_xstar.transpose()); //maybe need some transpose?
+	
+	Kx_star_star = GetMat(Kx,idx_xstar.transpose(),idx_xstar.transpose()); // test to test
+	kstar = Kron(Kt_star, Kx_star);
+	
+	kstar =GetMatRow(kstar,idx_global);
+	Kss = Kt_ss * Kx_star_star;
+
+
+	mustar = kstar.transpose()*Kinv*GetVec(f,idx_global);
+	Css    = Kss - kstar.transpose()*W*llt.solve(Kinv*kstar); 
+	varstar=Css.diagonal();
+	
+	
+	VectorXd sigmastar= sqrt(varstar.array());
+	VectorXd z=(fbest-mustar.array())/sigmastar.array();
+	VectorXd pdfval = normpdf(z);
+	VectorXd cdfval= normcdf(z);
+	VectorXd inter =z.array()*(1-cdfval.array());
+	VectorXd el= sigmastar.cwiseProduct(inter-pdfval);
+	
+	
+	mei=el.minCoeff();
+	return mei; 
+}
+
+double Gppe::expected_voi(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,
+              const MatrixXd& t, const MatrixXd & x,const TypePair& train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest)
+{
+	int M=t.rows();
+	int N=x.rows();
+	VectorXd idx_global_1,idx_global_2;
+	VectorXd tstar=t.row(M);
+	double mei=0;
+	double p_12,p_21, mei_12, mei_21;
+	
+	Predict_Gppe_Laplace(sigma,t, x,  idx_global, ind_t,ind_x, tstar, test_pair);
+	p_12=p;
+	p_21=1-p_12;
+	MatrixXd inter(train_pairs(M).rows()+1,2);
+	inter<<train_pairs(M),test_pair;
+	
+	compute_global_index(idx_global_1,idx_global_2,train_pairs,N);
+	unique(idx_global,idx_global_1,idx_global_2);
+	ind2sub(ind_x,ind_t,N,M,idx_global);
+
+	Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+	
+	mei_12=maximum_expected_improvement(theta_x, theta_t, sigma,t,x,idx_global, ind_t, ind_x, tstar,N, fbest);
+	
+	//recomputation
+	inter=train_pairs(M);
+	fliplr(test_pair);
+	inter.row(inter.rows()-1)=test_pair;
+	
+	
+	compute_global_index(idx_global_1,idx_global_2,train_pairs,N);
+	unique(idx_global,idx_global_1,idx_global_2);
+	ind2sub(ind_x,ind_t,N,M,idx_global);
+	
+	
+	
+	Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+	
+	mei_21=maximum_expected_improvement(theta_x, theta_t, sigma,t,x,idx_global, ind_t, ind_x, tstar,N, fbest);
+	
+	
+	return (p_12*mei_12+p_21*mei_21)-mei ;
+}
 
 void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
     , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter)// ptr_query_func, ptr_loss_func)
@@ -112,6 +208,7 @@ void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const doubl
 	bool stop=false;
 	double foo, val, idx_good;
 	int count=0;
+	MatrixXd new_pair;
 	MatrixXd t;
 	
 	
@@ -129,8 +226,8 @@ void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const doubl
 	
 		Predictive_Utility_Distribution(t, test_t,N,idx_global );
 	
-		std::ptrdiff_t idxbest;
-		foo = mustar.maxCoeff(&idxbest);
+		std::ptrdiff_t best_item_idx;
+		foo = mustar.maxCoeff(&best_item_idx);
 		double fbest=get_fbest(N);
 	
 		for(int i=0;i<Npairs;i++)
@@ -141,7 +238,7 @@ void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const doubl
 				continue;
 			}
 			VectorXd test_pair=idx_pairs.row(i);
-			//evoi(i)=expected_voi();
+			evoi(i)=expected_voi(theta_x, theta_t, sigma, t, x, train_pairs, idx_global, ind_t, ind_x, test_pair, fbest);
 		}
 		
 		std::ptrdiff_t query_idx;
@@ -151,18 +248,18 @@ void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const doubl
 		//and no need for the Lgood check stuff
 		is_selected(query_idx)=false;
 		
+		//new_pair=ptr_query_func;
 		
-		
-		
-		
+		//adding the new pair
+		compute_global_index(idx_global_1,idx_global_2,train_pairs, N);
+	
+		unique(idx_global,idx_global_1,idx_global_2);
+	
+		ind2sub(ind_x,ind_t,N,M,idx_global);
 		
 		count++;
-	}
-	
-	
-	
-	
-	
+		cout<<"Query "<<count<<"["<<new_pair(0)<<" "<<new_pair(1)<<"] done, Recommended Item= "<<best_item_idx<<", loss="<<loss(iter)<<endl<<endl;
+	}	
 }
 
 

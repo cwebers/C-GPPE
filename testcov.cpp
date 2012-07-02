@@ -50,8 +50,10 @@ int testgendata()
 	dsp(idx_global_2,"idx_global_2");
 	
 	unique(idx_global,idx_global_1,idx_global_2);
-	
-	dsp(idx_global,"idx_global");
+	ind2sub(ind_x,ind_t,N,M,idx_global);
+	dsp(ind_t,"ind_t");
+	dsp(ind_x,"ind_x");
+
 
 	return 0;
 }
@@ -362,8 +364,10 @@ int testVectors()
 // Test voidfunctions
 int testvoidfunctions()
 {
-	int a=12;
-	//compute_global_index(a);
+	MatrixXd z(4,4),b(5,5);
+	z<<0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,14;
+	fliplr(z);
+	dsp(z,"z");
 	return 0;
 }
 
@@ -529,14 +533,14 @@ int main()
     //testCovLINard();
     //testCovSEard();
     //testVectors();
-    //testvoidfunctions();
+    testvoidfunctions();
     //testpredict_gppe_laplace_fast();
     //testapproc_gppe_laplace_fast();
 	//bigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
 	//testpredictive_utility();
 	//testNaNValue();
 	//testmatrixmultiplication();
-	findvalue();
+	//findvalue();
 	//testgendata();
 }
 

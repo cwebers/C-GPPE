@@ -27,6 +27,8 @@ using Eigen::Matrix;
 
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 
+
+void fliplr(MatrixXd& a);
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx );
 int find(const MatrixXd& a, double val );
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);

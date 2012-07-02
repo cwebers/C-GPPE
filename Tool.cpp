@@ -13,6 +13,20 @@
 #include "Tool.h"
 
 
+void fliplr(MatrixXd& a)
+{
+	double inter;
+	for(int i=0;i<a.rows();i++)
+	{
+		for(int j=0;j<((int)(a.cols()/2));j++)
+		{
+			inter=a(i,j);
+			a(i,j)=a(i,a.cols()-1-j);
+			a(i,a.cols()-1-j)=inter;
+		}
+	}
+
+}
 
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx )
 {
