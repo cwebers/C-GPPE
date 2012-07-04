@@ -13,6 +13,36 @@
 #include "Tool.h"
 
 
+
+
+
+MatrixXd make_query_toydata(TypePair Oracle,int query_idx, int test_idx)
+{
+	return Oracle(test_idx).row(query_idx);
+}
+
+VectorXd get_dWdf(VectorXd all_diag_idx, VectorXd f,VectorXd ind_t,VectorXd ind_x,double sigma, MatrixXd pairs,int  M, int N)
+{
+	int n=M*N;
+	MatrixXd dWdf= MatrixXd::Zero(n,n);
+	VectorXd idx_1,idx_2, idx_select;
+	
+	//We first find the user and the data-point corresponding to this index
+	idx_1=pairs.col(0);
+	idx_2=pairs.col(1);
+	
+	// We simply match those corresponding to the required f
+	idx_select=find(idx_1,ind_x);
+	if(idx_select.rows()==0)
+		idx_select=find(idx_2,ind_x);
+		
+	
+
+	
+}
+
+
+
 void fliplr(MatrixXd& a)
 {
 	double inter;
@@ -43,6 +73,25 @@ void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd id
 	}
 }
 
+void Add(VectorXd& a, double val)
+{
+	VectorXd inter;
+	inter.resize(a.rows()+1);
+	inter<<a,val;
+	a=inter;
+}
+
+VectorXd find(const VectorXd& a, const VectorXd& b)
+{
+	VectorXd c;
+	for(int i=0;i<a.rows();i++)
+	{
+		if(a(i)==b(i))
+			Add(c,i);
+	}
+		
+	return c;
+}
 
 int find(const MatrixXd& a,double  val)
 {
@@ -62,7 +111,9 @@ int find(const MatrixXd& a,double  val)
 			j++;
 		}
 		i++;
-	}	
+	}
+	if(found==false)
+		idx=INT_MIN;	
 	return idx;
 }
 

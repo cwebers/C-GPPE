@@ -191,7 +191,7 @@ double Gppe::expected_voi(const VectorXd & theta_x,const VectorXd& theta_t, cons
 }
 
 void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
-    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter)// ptr_query_func, ptr_loss_func)
+    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter,const  TypePair& Oracle )
 {
 	int N=x.rows();
 	int Mtrain=train_t.rows();
@@ -248,7 +248,7 @@ void Gppe::Elicit( const VectorXd & theta_x,const VectorXd& theta_t, const doubl
 		//and no need for the Lgood check stuff
 		is_selected(query_idx)=false;
 		
-		//new_pair=ptr_query_func;
+		new_pair=make_query_toydata(Oracle, query_idx, test_user_idx);
 		
 		//adding the new pair
 		compute_global_index(idx_global_1,idx_global_2,train_pairs, N);

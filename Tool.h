@@ -24,36 +24,59 @@ using Eigen::SparseMatrix;
 using Eigen::Dynamic;
 using Eigen::Matrix;
 
-
+// typdef for the preference pairs : dynamic vectors of dynamic matrices
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 
+//no classed yet
+
+MatrixXd make_query_toydata(TypePair Oracle,int query_idx, int test_idx);
+
+//convenient access functions
 
 void fliplr(MatrixXd& a);
-void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx );
 int find(const MatrixXd& a, double val );
-void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
-void dsp(string s);
-void dsp(MatrixXd a,string s);
-void dsp(double a,string s);
-void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N);
-MatrixXd Kron(MatrixXd mat1, MatrixXd mat2);
-VectorXd ind2global(VectorXd vec,int j,int N);
+void Add(VectorXd& a, double val);
+VectorXd find(const VectorXd& a, const VectorXd& b);
 MatrixXd GetMat(MatrixXd mat,VectorXd t1, VectorXd t2);
 MatrixXd GetMatRow(MatrixXd mat,VectorXd t1);
-MatrixXd SetNaN(MatrixXd a);
-VectorXd MyNaNMean(MatrixXd a);
-
 VectorXd GetVec(VectorXd vec,VectorXd t1);
+MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
+VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);
+int sub2ind(int dimrow,int dimcol, int row, int col);
+VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
+
+//Maths functions
+
 double normcdf(double x);
 VectorXd normcdf(VectorXd x);
 double normpdf(double x);
 VectorXd normpdf(VectorXd x);
-VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
-int sub2ind(int dimrow,int dimcol, int row, int col);
-VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
-MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
-VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);
+MatrixXd Kron(MatrixXd mat1, MatrixXd mat2);
+MatrixXd SetNaN(MatrixXd a);
+VectorXd MyNaNMean(MatrixXd a);
 VectorXd GetDiff(VectorXd a,VectorXd b);
+VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
+VectorXd get_dWdf(VectorXd all_diag_idx,VectorXd f,VectorXd ind_t,VectorXd ind_x,double sigma, MatrixXd pairs,int  M, int N);
+
+//Generating parameters functions
+
+void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N);
+void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
+void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx );
+
+
+//Debugging functions
+
+void dsp(string s);
+void dsp(MatrixXd a,string s);
+void dsp(double a,string s);
+VectorXd ind2global(VectorXd vec,int j,int N);
+
+
+
+
+
+
 
 
 #endif

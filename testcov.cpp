@@ -16,9 +16,10 @@
 
 int findvalue()
 {
-	MatrixXd z=MatrixXd::Zero(10,10);
-	z(1,0)=18;
-	cout<<find(z,18)<<endl;
+	VectorXd i(5),j(5);
+	i<<1,2,3,4,5;
+	j<<47,555,512,18,999;
+	dsp(find(i,j),"findproc");
 	return 0;
 }
 
@@ -310,7 +311,6 @@ int testapproc_gppe_laplace_fast()
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
     VectorXd theta_x = VectorXd::Zero(4);
     VectorXd theta_t = VectorXd::Zero(3);
-    VectorXd f = VectorXd::Zero(6);
     t(0, 0) = -0.7258;
     t(0, 1) = -1.9623;
     t(1, 0) = -0.3078;
@@ -533,14 +533,14 @@ int main()
     //testCovLINard();
     //testCovSEard();
     //testVectors();
-    testvoidfunctions();
+    //testvoidfunctions();
     //testpredict_gppe_laplace_fast();
     //testapproc_gppe_laplace_fast();
 	//bigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
 	//testpredictive_utility();
 	//testNaNValue();
 	//testmatrixmultiplication();
-	//findvalue();
+	findvalue();
 	//testgendata();
 }
 

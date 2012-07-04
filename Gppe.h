@@ -48,7 +48,7 @@ const MatrixXd& t, const MatrixXd & x,const VectorXd& idx_global,const VectorXd&
 	
 	
 	void Elicit(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs
-    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter);//, ptr_query_func, ptr_loss_func);
+    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs,int  Maxiter, const TypePair & Oracle);
 
 	void Make_Predictions_New_User(const VectorXd & theta_x,const VectorXd& theta_t, const double& sigma,const MatrixXd& train_t,const MatrixXd &x,const TypePair & train_pairs,
 			const VectorXd & idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, 
