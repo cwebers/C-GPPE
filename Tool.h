@@ -30,7 +30,7 @@ typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
 //no classed yet
 
 MatrixXd make_query_toydata(TypePair Oracle,int query_idx, int test_idx);
-
+void loss_query_toydata(double &loss,const MatrixXd& F,bool stop,int test_user_idx,int best_item_idx);
 //convenient access functions
 
 void fliplr(MatrixXd& a);
@@ -56,21 +56,22 @@ MatrixXd SetNaN(MatrixXd a);
 VectorXd MyNaNMean(MatrixXd a);
 VectorXd GetDiff(VectorXd a,VectorXd b);
 VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
-VectorXd get_dWdf(VectorXd all_diag_idx,VectorXd f,VectorXd ind_t,VectorXd ind_x,double sigma, MatrixXd pairs,int  M, int N);
-
+MatrixXd get_dWdf(VectorXd all_diag_idx,VectorXd f,VectorXd ind_t,VectorXd ind_x,double sigma, MatrixXd pairs,int  M, int N);
+VectorXd get_cum2(VectorXd idx, VectorXd val, int n);
+void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma,const TypePair& all_pairs, int M, int N);
 //Generating parameters functions
 
 void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N);
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd idx );
-
-
+VectorXd ind2global(VectorXd vec,int j,int N);
+VectorXd ind2global(VectorXd a,VectorXd b,int N);
+VectorXd Nfirst(int N);
 //Debugging functions
 
 void dsp(string s);
 void dsp(MatrixXd a,string s);
 void dsp(double a,string s);
-VectorXd ind2global(VectorXd vec,int j,int N);
 
 
 
