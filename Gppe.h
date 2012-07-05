@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include "Covfunc.h"
+#include "Tool.h"
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -62,11 +63,11 @@ const MatrixXd& t, const MatrixXd & x,const VectorXd& idx_global,const VectorXd&
 	void Approx_Gppe_Laplace(const VectorXd& theta_x,const VectorXd& theta_t,
 	const double& sigma,const MatrixXd& t,const MatrixXd& x,const TypePair &all_pairs,const VectorXd &idx_global,const VectorXd& idx_global_1,const VectorXd& idx_global_2, const VectorXd& ind_t,const VectorXd& ind_x,int M,int N);
 	
-	double log_likelihood(VectorXd f,double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int M,int N);
+	double log_likelihood(double sigma, TypePair all_pairs,VectorXd idx_global_1,VectorXd idx_global_2,int M,int N);
 	
-	VectorXd deriv_log_likelihood_gppe_fast(VectorXd f,double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
+	VectorXd deriv_log_likelihood_gppe_fast(double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 	
-	MatrixXd deriv2_log_likelihood_gppe_fast(VectorXd f,double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
+	MatrixXd deriv2_log_likelihood_gppe_fast(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2,int M, int N);
 	
 	double get_fbest(int N);
 	//Variables

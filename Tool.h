@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include "Covfunc.h"
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -44,6 +45,9 @@ MatrixXd SetMatGenIdx(MatrixXd mat,VectorXd t1, VectorXd t2);
 VectorXd GetMatGenIdx(MatrixXd mat,VectorXd t1);
 int sub2ind(int dimrow,int dimcol, int row, int col);
 VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
+VectorXd concatmat(const MatrixXd& a );
+void GetTheta(VectorXd& theta_x,VectorXd& theta_t,double& sigma ,VectorXd& theta);
+VectorXd concatTheta(const VectorXd& theta_t,const  VectorXd& theta_x, double sigma);
 
 //Maths functions
 
@@ -59,6 +63,10 @@ VectorXd Get_Cumulative_Val(VectorXd idx, VectorXd val, int n);
 MatrixXd get_dWdf(VectorXd all_diag_idx,VectorXd f,VectorXd ind_t,VectorXd ind_x,double sigma, MatrixXd pairs,int  M, int N);
 VectorXd get_cum2(VectorXd idx, VectorXd val, int n);
 void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma,const TypePair& all_pairs, int M, int N);
+VectorXd get_dlogp_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma,const TypePair& all_pairs, int M, int N);
+
+
+
 //Generating parameters functions
 
 void compute_global_index(VectorXd& idx_global_1,VectorXd& idx_global_2,const TypePair& all_pairs,int N);
@@ -67,6 +75,7 @@ void ind2sub(VectorXd& ind_i, VectorXd& ind_j,int dimrow, int dimcol,VectorXd id
 VectorXd ind2global(VectorXd vec,int j,int N);
 VectorXd ind2global(VectorXd a,VectorXd b,int N);
 VectorXd Nfirst(int N);
+
 //Debugging functions
 
 void dsp(string s);

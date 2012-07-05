@@ -12,6 +12,46 @@
 // under the License.
 #include "Tool.h"
 
+
+
+
+
+
+void GetTheta(VectorXd& theta_t,VectorXd& theta_x,double& sigma ,VectorXd& theta)
+{
+	double dim=theta.rows();
+	sigma=theta(dim-1);
+	theta_t=theta.head((dim-1)/2);
+	theta_x=theta.segment(dim/2,(dim-1)/2);
+	
+}
+
+VectorXd concatTheta(const VectorXd &theta_t, const VectorXd &theta_x, double sigma)
+{
+	VectorXd theta(theta_t.rows()+theta_x.rows()+1);
+	theta<<theta_t,theta_x,sigma;
+	return theta;
+}
+
+
+
+VectorXd concatmat(const MatrixXd& a )
+{
+	VectorXd concat(a.rows()*a.cols());
+	int z=0;
+	for(int i=0;i<a.rows();i++)
+	{
+		for(int j=0;j<a.cols();j++)
+		{
+			concat(z)=a(j,i);
+			z++;
+		}
+	}
+	return concat;
+}
+
+
+
 VectorXd Nfirst(int N)
 {
 	VectorXd a(N);
@@ -20,6 +60,41 @@ VectorXd Nfirst(int N)
 		a(i)=i;
 	}
 	return a;
+}
+
+VectorXd get_dlogp_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma,const TypePair& all_pairs, int M, int N)
+{
+	M=all_pairs.rows();
+	MatrixXd Dfdsigma=MatrixXd::Zero(N,M);
+	VectorXd idx_global_1, idx_global_2, pdf_val, cdf_val, ratio;
+	VectorXd idx_1,idx_2, z, val, coef;
+	MatrixXd pairs;
+	
+	for(int j=0;j<M;j++)
+	{
+		if(all_pairs(j).rows()==0)
+			continue;
+		pairs=all_pairs(j);
+		idx_1=pairs.col(0);
+		idx_2=pairs.col(1);
+		
+		idx_global_1= ind2global(idx_1,j,N);
+		idx_global_2= ind2global(idx_2,j,N);
+		
+		z=(GetVec(f,idx_global_1)-GetVec(f,idx_global_2))/sigma;
+		pdf_val = normpdf(z);
+    	cdf_val = normcdf(z);
+    	
+    	ratio=pdf_val.array()/cdf_val.array();
+    	VectorXd inter=(z.array()*(z+ratio).array()).array()-1;
+    	
+    	val=(1/sigma)*ratio.array()*inter.array();
+		
+		coef=get_cum2(idx_1, val, N);
+		coef=coef-get_cum2(idx_2, val, N);
+		Dfdsigma.col(j)=coef;
+	}
+	return concatmat(Dfdsigma);
 }
 
 

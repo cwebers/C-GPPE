@@ -13,13 +13,110 @@
 
 #include "Covfunc.h"
 #include "Gppe.h"
+#include "Learn.h"
+int testgradnl()
+{
+    //generating the data naively
+
+    int M = 3;
+    int N = 2;
+    double sigma = 0.1;
+    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    TypePair all_pairs(2);
+    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd theta = VectorXd::Zero(8);
+    theta(7)=0.1;
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    pairs << 0, 1;
+    tstar<< 0.2501, 1.4168;
+    all_pairs(0) = pairs;
+    all_pairs(1) = pairs;
+
+
+    idx_global_1 << 0, 2;
+    idx_global_2 << 1, 3;
+    idx_global << 0, 1, 2, 3;
+    ind_t << 0, 0, 1, 1;
+    ind_x << 0, 1, 0, 1;
+    Learn l=Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
+	
+	dsp(l.negative_marginal_log_likelihood(theta),"nl");
+	return 0;
+}
+
+
+
+
+
+
+int testnl()
+{
+    //generating the data naively
+    int M = 3;
+    int N = 2;
+    double sigma = 0.1;
+    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    TypePair all_pairs(2);
+    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd theta = VectorXd::Zero(8);
+    theta(7)=0.1;
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    pairs << 0, 1;
+    tstar<< 0.2501, 1.4168;
+    all_pairs(0) = pairs;
+    all_pairs(1) = pairs;
+
+
+    idx_global_1 << 0, 2;
+    idx_global_2 << 1, 3;
+    idx_global << 0, 1, 2, 3;
+    ind_t << 0, 0, 1, 1;
+    ind_x << 0, 1, 0, 1;
+    Learn l=Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
+	
+	dsp(l.negative_marginal_log_likelihood(theta),"nl");
+	return 0;
+}
+
 
 int findvalue()
 {
-	VectorXd i(5),j(5);
-	i<<1,2,3,4,5;
-	j<<47,555,512,18,999;
-	dsp(find(i,j),"findproc");
+	VectorXd theta(7), theta_x(3), theta_t(3);
+	double sigma;
+	theta<<1,2,3,4,5,6,7;
+	GetTheta(theta_x, theta_t, sigma, theta);
+	dsp(theta_x,"theta_x");
+	dsp(theta_t,"theta_t");
+	dsp(sigma,"sigma");
+	
+	dsp(concatTheta(theta_x, theta_t, sigma),"theta");
+
 	return 0;
 }
 
@@ -540,7 +637,9 @@ int main()
 	//testpredictive_utility();
 	//testNaNValue();
 	//testmatrixmultiplication();
-	findvalue();
+	//findvalue();
 	//testgendata();
+	//testnl();
+	testgradnl();
 }
 

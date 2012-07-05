@@ -1,13 +1,13 @@
 COMP	=g++ -I ../Eigen #-O3
 OPTIONS	=-c
 EXECUTABLE	=test
-OBJETS		=testcov.o Covfunc.o Gppe.o Tool.o
+OBJETS		=test.o Covfunc.o Gppe.o Tool.o Learn.o
 
 ${EXECUTABLE}:${OBJETS}
 	${COMP} -o ${EXECUTABLE} ${OBJETS}
 	
-testcov.o:testcov.cpp Covfunc.h Gppe.h Tool.h
-	${COMP} ${OPTIONS} testcov.cpp
+test.o:test.cpp Covfunc.h Gppe.h Tool.h Learn.h
+	${COMP} ${OPTIONS} test.cpp
 	
 Covfunc.o :Covfunc.cpp Covfunc.h
 	${COMP} ${OPTIONS} Covfunc.cpp
@@ -17,6 +17,9 @@ Gppe.o :Gppe.cpp Gppe.h
 	
 Tool.o :Tool.cpp Tool.h
 	${COMP} ${OPTIONS} Tool.cpp
+	
+Learn.o :Learn.cpp Learn.h
+	${COMP} ${OPTIONS} Learn.cpp
 
 clean:
 	rm -rf *.o test

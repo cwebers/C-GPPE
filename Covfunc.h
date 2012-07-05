@@ -25,7 +25,6 @@ using Eigen::SparseMatrix;
 using Eigen::Dynamic;
 using Eigen::LLT;
 using Eigen::Matrix;
-#include "Tool.h"
 class Covfunc
 {
 	public :
