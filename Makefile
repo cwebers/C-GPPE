@@ -1,6 +1,6 @@
 CPP	   = g++
 INCL       = -I ../Eigen -I../dlib
-OPTIONS	   = # -O3
+OPTIONS	   = -O3 -fopenmp
 EXECUTABLE = test
 OBJECTS	   = test.o Covfunc.o Gppe.o Tool.o Learn.o
 
