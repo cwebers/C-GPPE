@@ -12,72 +12,72 @@
 // under the License.
 #include "Covfunc.h"
 
-Covfunc::Covfunc() 
+Covfunc::Covfunc()
 {
-	Theta= VectorXd(3);
-	//a=5;
-	//b=2;
-	//c=0;
+    Theta = VectorXd(3);
+    //a=5;
+    //b=2;
+    //c=0;
 }
 
 Covfunc::Covfunc(const Covfunc & c)
 {
-	VectorXd Theta;
-	Theta=Theta=c.Theta;
+    VectorXd Theta;
+    Theta = Theta = c.Theta;
 }
 
-Covfunc::Covfunc( VectorXd theta) 
+Covfunc::Covfunc( VectorXd theta)
 {
-	Theta = theta;
+    Theta = theta;
 }
 
-Covfunc::~Covfunc() 
+Covfunc::~Covfunc()
 {
 
 }
 
-VectorXd Covfunc::GetTheta() 
-{ 
-	return Theta; 
+VectorXd Covfunc::GetTheta()
+{
+    return Theta;
 }
 
 
-void Covfunc::SetTheta(VectorXd t) 
+void Covfunc::SetTheta(VectorXd t)
 {
-	Theta=t;
+    Theta = t;
 }
 
-/*void Covfunc::add(int num) 
+/*void Covfunc::add(int num)
 {
-	c=a+b+num;
-	cout<<c<<endl;
+ c=a+b+num;
+ cout<<c<<endl;
 }*/
 
 
 MatrixXd Covfunc::ComputeGrandMatrix(MatrixXd fea)
 {
-	MatrixXd cov=MatrixXd::Zero(fea.rows(),fea.rows());
-	for(int i=0;i<fea.rows();i++)
-	{
-		for(int j=0;j<fea.rows();j++)
-		{
-			cov(i,j)=Evaluate(fea.row(i),fea.row(j));
-		}
-	}
-	return cov;
+    MatrixXd cov = MatrixXd::Zero(fea.rows(), fea.rows());
+    for (int i = 0;i < fea.rows();i++)
+    {
+        for (int j = 0;j < fea.rows();j++)
+        {
+            cov(i, j) = Evaluate(fea.row(i), fea.row(j));
+        }
+    }
+    return cov;
 }
 
 MatrixXd Covfunc::Compute(MatrixXd p, MatrixXd q)
 {
-	MatrixXd cov=MatrixXd::Zero(p.rows(),q.rows());
-	for(int i=0;i<p.rows();i++)
-	{
-		for(int j=0;j<q.rows();j++)
-		{
-			cov(i,j)=Evaluate(p.row(i),q.row(j));
-		}
-	}
-	return cov;
+    MatrixXd cov = MatrixXd::Zero(p.rows(), q.rows());
+    for (int i = 0;i < p.rows();i++)
+    {
+        for (int j = 0;j < q.rows();j++)
+        {
+            cov(i, j) = Evaluate(p.row(i), q.row(j));
+        }
+    }
+    return cov;
 }
 
 

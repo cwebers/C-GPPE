@@ -24,55 +24,56 @@ using Eigen::SparseMatrix;
 
 class Learn
 {
-	public :
-	Learn();
-	Learn(Covfunc *Covt,Covfunc *Covx,
-	MatrixXd T,MatrixXd X,TypePair All_pairs,VectorXd Idx_global,VectorXd Idx_global_1,
-	VectorXd Idx_global_2, VectorXd Ind_t, VectorXd Ind_x,int  m, int n);// Default Contructor
-	//Learn(const Learn & l); //Contructor by recopy
-	~Learn(); // Destructor
+public :
+    Learn();
+    Learn(Covfunc *Covt, Covfunc *Covx,
+          MatrixXd T, MatrixXd X, TypePair All_pairs, VectorXd Idx_global, VectorXd Idx_global_1,
+          VectorXd Idx_global_2, VectorXd Ind_t, VectorXd Ind_x, int  m, int n);// Default Contructor
+    //Learn(const Learn & l); //Contructor by recopy
+    ~Learn(); // Destructor
 
 
-	const double negative_marginal_log_likelihood(const column_vector &dltheta);
-	VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
-	
-	
-	double operator() ( const column_vector& arg) const
-	{
-	VectorXd theta=DlibtoEigen(arg);
-	VectorXd theta_x, theta_t;
-	double sigma;
-	GetTheta(theta_x, theta_t, sigma, theta);
-	sigma=exp(sigma);
-	covt->SetTheta(theta_t);
-	covx->SetTheta(theta_x);
-	Gppe g = Gppe(covt, covx);
-	g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
-    t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-    
-    double cond_loglike=g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
-	VectorXd fvis=GetVec(g.Getf(),idx_global);
-	double margl=-0.5*(-log(g.GetKinv().determinant())+2*(log(g.GetL().diagonal().array()).sum()))
-	-0.5*fvis.transpose()*g.GetKinv()*fvis +cond_loglike;
-	dsp(-margl,"nl");
-	return -margl;
-}
-	//VectorXd Optimize(VectorXd theta_first);
-	//Variables
-	private :
-	Covfunc *covx;
-	Covfunc *covt;
-	MatrixXd t;
-	MatrixXd x;
-	VectorXd idx_global;
-	VectorXd idx_global_1;
-	VectorXd idx_global_2;
-	VectorXd ind_t;
-	VectorXd ind_x;
-	TypePair train_pairs;
-	int M;
-	int N;
-	
+    const double negative_marginal_log_likelihood(const column_vector &dltheta);
+    VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
+
+
+    double operator() ( const column_vector& arg) const;
+// {
+// VectorXd theta=DlibtoEigen(arg);
+// VectorXd theta_x, theta_t;
+// double sigma;
+// GetTheta(theta_x, theta_t, sigma, theta);
+// sigma=exp(sigma);
+// covt->SetTheta(theta_t);
+// covx->SetTheta(theta_x);
+// Gppe g = Gppe(covt, covx);
+// g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+//    t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+//
+//    double cond_loglike=g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
+// VectorXd fvis=GetVec(g.Getf(),idx_global);
+// double margl=-0.5*(-log(g.GetKinv().determinant())+2*(log(g.GetL().diagonal().array()).sum()))
+// -0.5*fvis.transpose()*g.GetKinv()*fvis +cond_loglike;
+// dsp(-margl,"nl");
+// return -margl;
+//        return this->negative_marginal_log_likelihood(arg);
+//}
+    //VectorXd Optimize(VectorXd theta_first);
+    //Variables
+private :
+    Covfunc *covx;
+    Covfunc *covt;
+    MatrixXd t;
+    MatrixXd x;
+    VectorXd idx_global;
+    VectorXd idx_global_1;
+    VectorXd idx_global_2;
+    VectorXd ind_t;
+    VectorXd ind_x;
+    TypePair train_pairs;
+    int M;
+    int N;
+
 
 };
 #endif

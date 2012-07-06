@@ -1,25 +1,26 @@
-COMP	=g++ -I ../Eigen -I ../ #-O3
-OPTIONS	=-c
-EXECUTABLE	=test
-OBJETS		=test.o Covfunc.o Gppe.o Tool.o Learn.o
+CPP	   = g++
+INCL       = -I ../Eigen -I../dlib
+OPTIONS	   = -O3
+EXECUTABLE = test
+OBJECTS	   = test.o Covfunc.o Gppe.o Tool.o Learn.o
 
-${EXECUTABLE}:${OBJETS}
-	${COMP} -o ${EXECUTABLE} ${OBJETS}
+${EXECUTABLE}: ${OBJECTS}
+	${CPP} -o ${EXECUTABLE} ${OBJECTS}
 	
-test.o:test.cpp Covfunc.h Gppe.h Tool.h Learn.o
-	${COMP} ${OPTIONS} test.cpp
+test.o: test.cpp Covfunc.h Gppe.h Tool.h Learn.o
+	${CPP} ${INCL} ${OPTIONS} -c test.cpp
 	
-Covfunc.o :Covfunc.cpp Covfunc.h
-	${COMP} ${OPTIONS} Covfunc.cpp
+Covfunc.o: Covfunc.cpp Covfunc.h
+	${CPP} ${INCL} ${OPTIONS} -c Covfunc.cpp
 
-Gppe.o :Gppe.cpp Gppe.h
-	${COMP} ${OPTIONS} Gppe.cpp
+Gppe.o: Gppe.cpp Gppe.h
+	${CPP} ${INCL} ${OPTIONS} -c Gppe.cpp
 	
-Tool.o :Tool.cpp Tool.h
-	${COMP} ${OPTIONS} Tool.cpp
+Tool.o: Tool.cpp Tool.h
+	${CPP} ${INCL} ${OPTIONS} -c Tool.cpp
 	
-Learn.o :Learn.cpp Learn.h
-	${COMP} ${OPTIONS} Learn.cpp
+Learn.o: Learn.cpp Learn.h
+	${CPP} ${INCL} ${OPTIONS} -c Learn.cpp
 
 clean:
-	rm -rf *.o test
+	rm -rf ${OBJECTS} ${EXECUTABLE}

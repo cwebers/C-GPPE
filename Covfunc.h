@@ -16,164 +16,164 @@
 
 class Covfunc
 {
-	public :
-	Covfunc();
-	Covfunc(VectorXd theta);
-	Covfunc(const Covfunc & c);
-	~Covfunc();
-	VectorXd GetTheta();
-	void SetTheta(VectorXd t);
-	virtual int GetThetaLength()=0;
-	virtual double Evaluate(VectorXd t1, VectorXd t2)=0;
-	//virtual MatrixXd GetGradient()=0;
-	MatrixXd ComputeGrandMatrix(MatrixXd fea);
-	MatrixXd Compute(MatrixXd p,MatrixXd q);
-	void add(int num);
-	protected :
-	VectorXd Theta;
-	//int a,b,c;
+public :
+    Covfunc();
+    Covfunc(VectorXd theta);
+    Covfunc(const Covfunc & c);
+    ~Covfunc();
+    VectorXd GetTheta();
+    void SetTheta(VectorXd t);
+    virtual int GetThetaLength() = 0;
+    virtual double Evaluate(VectorXd t1, VectorXd t2) = 0;
+    //virtual MatrixXd GetGradient()=0;
+    MatrixXd ComputeGrandMatrix(MatrixXd fea);
+    MatrixXd Compute(MatrixXd p, MatrixXd q);
+    void add(int num);
+protected :
+    VectorXd Theta;
+    //int a,b,c;
 };
 
-class CovSEard : public Covfunc 
+class CovSEard : public Covfunc
 {
-	public :
-	CovSEard():Covfunc(){};
-	CovSEard(VectorXd t):Covfunc(t){};
-	~CovSEard(){};
+public :
+    CovSEard(): Covfunc() {};
+    CovSEard(VectorXd t): Covfunc(t) {};
+    ~CovSEard() {};
 
-	virtual double Evaluate(VectorXd p,VectorXd q) 
-	{
-		double res=0;
-		double sum=0;
-		double sf2 =exp(2*Theta(Theta.rows()-1));
-		for(int i=0;i<p.rows();i++)
-			{
-				sum+= pow((p(i)-q(i)),2)/exp(2*Theta(i));	
-			}	
-			res=sf2*exp(-0.5*sum);
-	
-		
-		return res;
-	}
-	virtual int GetThetaLength()
-	{
-	return -1;
-	}
+    virtual double Evaluate(VectorXd p, VectorXd q)
+    {
+        double res = 0;
+        double sum = 0;
+        double sf2 = exp(2 * Theta(Theta.rows() - 1));
+        for (int i = 0;i < p.rows();i++)
+        {
+            sum += pow((p(i) - q(i)), 2) / exp(2 * Theta(i));
+        }
+        res = sf2 * exp(-0.5 * sum);
+
+
+        return res;
+    }
+    virtual int GetThetaLength()
+    {
+        return -1;
+    }
 };
 
-class CovLINard : public Covfunc 
+class CovLINard : public Covfunc
 {
-	public :
-	CovLINard():Covfunc(){};
-	CovLINard(VectorXd t):Covfunc(t){};
-	~CovLINard(){};
-	virtual double Evaluate(VectorXd p,VectorXd q) 
-		{
-			double res=0;
-			for(int i=0;i<p.rows();i++)
-			{
-				res+= (p(i)*q(i))/(exp(2*Theta(i)));			
-			}
-			
-			return res;
-		}
-	virtual int GetThetaLength()
-	{
-		return 0;
-	}
+public :
+    CovLINard(): Covfunc() {};
+    CovLINard(VectorXd t): Covfunc(t) {};
+    ~CovLINard() {};
+    virtual double Evaluate(VectorXd p, VectorXd q)
+    {
+        double res = 0;
+        for (int i = 0;i < p.rows();i++)
+        {
+            res += (p(i) * q(i)) / (exp(2 * Theta(i)));
+        }
+
+        return res;
+    }
+    virtual int GetThetaLength()
+    {
+        return 0;
+    }
 };
 
-class CovNoise : public Covfunc 
+class CovNoise : public Covfunc
 {
-	public :
-	CovNoise():Covfunc(){};
-	CovNoise(VectorXd t):Covfunc(t){};
-	~CovNoise(){};
-	virtual double Evaluate(VectorXd p,VectorXd q) 
-		{
-			double res=0;
-			if (p==q)
-				return exp(2*Theta(0));
-			else
-				return 0;
-		}
-	virtual int GetThetaLength()
-	{
-		return 1;
-	}
-};
-		
-class CovSEiso : public Covfunc 
-{
-	public :
-	CovSEiso():Covfunc(){};
-	CovSEiso(VectorXd t):Covfunc(t){};
-	~CovSEiso(){};
-
-	virtual double Evaluate(VectorXd p,VectorXd q) 
-	{
-		double res=0;
-		double sum=0;
-		double sf2 =exp(2*Theta(1));
-		for(int i=0;i<p.rows();i++)
-			{
-				sum+= pow((p(i)-q(i)),2);	
-			}	
-			res=sf2*exp(-0.5*sum/exp(2*Theta(0)));
-	
-		
-		return res;
-	}
-	virtual int GetThetaLength()
-	{
-		return 2;
-	}
+public :
+    CovNoise(): Covfunc() {};
+    CovNoise(VectorXd t): Covfunc(t) {};
+    ~CovNoise() {};
+    virtual double Evaluate(VectorXd p, VectorXd q)
+    {
+        double res = 0;
+        if (p == q)
+            return exp(2*Theta(0));
+        else
+            return 0;
+    }
+    virtual int GetThetaLength()
+    {
+        return 1;
+    }
 };
 
-class CovSum : public Covfunc 
+class CovSEiso : public Covfunc
 {
-	public :
-	CovSum(Covfunc *ptr1,Covfunc *ptr2):Covfunc()
-	{
-		p_a=ptr1;
-		p_b=ptr2;	
-	};
-	CovSum(Covfunc *ptr1,Covfunc *ptr2, VectorXd t):Covfunc(t)
-	{
-		p_a=ptr1;
-		p_b=ptr2;
-	};
-	~CovSum(){};
+public :
+    CovSEiso(): Covfunc() {};
+    CovSEiso(VectorXd t): Covfunc(t) {};
+    ~CovSEiso() {};
 
-	virtual double Evaluate(VectorXd p,VectorXd q) 
-	{	
-		switch (p_a->GetThetaLength()) 
-		{
-			case -1 :
-				p_a->SetTheta(Theta.block(0,0,p.rows()+1,1));
-				p_b->SetTheta(Theta.block(p.rows()+1,0,GetThetaLength()-p.rows()-1,1));
-				break;
+    virtual double Evaluate(VectorXd p, VectorXd q)
+    {
+        double res = 0;
+        double sum = 0;
+        double sf2 = exp(2 * Theta(1));
+        for (int i = 0;i < p.rows();i++)
+        {
+            sum += pow((p(i) - q(i)), 2);
+        }
+        res = sf2 * exp(-0.5 * sum / exp(2 * Theta(0)));
 
-			case 0 :
-				p_a->SetTheta(Theta.block(0,0,p.rows(),1));
-				p_b->SetTheta(Theta.block(p.rows(),0,GetThetaLength()-p.rows(),1));
-				break;
 
-			default:
-				p_a->SetTheta(Theta.block(0,0,p_a->GetThetaLength(),1));
-				p_b->SetTheta(Theta.block(p_a->GetThetaLength(),0,GetThetaLength()-p_a->GetThetaLength(),1));
-		}
-		
-		return p_a->Evaluate(p,q)+p_b->Evaluate(p,q);
-	}
-	
-	virtual int GetThetaLength()
-	{
-		return Theta.rows();
-	}
-	protected :
-	Covfunc *p_a;
-	Covfunc *p_b;
-		
+        return res;
+    }
+    virtual int GetThetaLength()
+    {
+        return 2;
+    }
+};
+
+class CovSum : public Covfunc
+{
+public :
+    CovSum(Covfunc *ptr1, Covfunc *ptr2): Covfunc()
+    {
+        p_a = ptr1;
+        p_b = ptr2;
+    };
+    CovSum(Covfunc *ptr1, Covfunc *ptr2, VectorXd t): Covfunc(t)
+    {
+        p_a = ptr1;
+        p_b = ptr2;
+    };
+    ~CovSum() {};
+
+    virtual double Evaluate(VectorXd p, VectorXd q)
+    {
+        switch (p_a->GetThetaLength())
+        {
+        case -1 :
+            p_a->SetTheta(Theta.block(0, 0, p.rows() + 1, 1));
+            p_b->SetTheta(Theta.block(p.rows() + 1, 0, GetThetaLength() - p.rows() - 1, 1));
+            break;
+
+        case 0 :
+            p_a->SetTheta(Theta.block(0, 0, p.rows(), 1));
+            p_b->SetTheta(Theta.block(p.rows(), 0, GetThetaLength() - p.rows(), 1));
+            break;
+
+        default:
+            p_a->SetTheta(Theta.block(0, 0, p_a->GetThetaLength(), 1));
+            p_b->SetTheta(Theta.block(p_a->GetThetaLength(), 0, GetThetaLength() - p_a->GetThetaLength(), 1));
+        }
+
+        return p_a->Evaluate(p, q) + p_b->Evaluate(p, q);
+    }
+
+    virtual int GetThetaLength()
+    {
+        return Theta.rows();
+    }
+protected :
+    Covfunc *p_a;
+    Covfunc *p_b;
+
 };
 #endif
