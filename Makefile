@@ -1,4 +1,4 @@
-COMP	=g++ -I ../Eigen #-O3
+COMP	=g++ -I ../Eigen -I ../ #-O3
 OPTIONS	=-c
 EXECUTABLE	=test
 OBJETS		=test.o Covfunc.o Gppe.o Tool.o Learn.o
@@ -6,7 +6,7 @@ OBJETS		=test.o Covfunc.o Gppe.o Tool.o Learn.o
 ${EXECUTABLE}:${OBJETS}
 	${COMP} -o ${EXECUTABLE} ${OBJETS}
 	
-test.o:test.cpp Covfunc.h Gppe.h Tool.h Learn.h
+test.o:test.cpp Covfunc.h Gppe.h Tool.h Learn.o
 	${COMP} ${OPTIONS} test.cpp
 	
 Covfunc.o :Covfunc.cpp Covfunc.h

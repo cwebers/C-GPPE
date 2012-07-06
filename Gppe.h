@@ -17,7 +17,6 @@
 #include <iostream>
 #include <string>
 #include "Covfunc.h"
-#include "Tool.h"
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;

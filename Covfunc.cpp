@@ -80,3 +80,6 @@ MatrixXd Covfunc::Compute(MatrixXd p, MatrixXd q)
 	return cov;
 }
 
+
+//MatrixXd Deriv()
+

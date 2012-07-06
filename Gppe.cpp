@@ -403,14 +403,11 @@ void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x,const VectorXd& theta_t,
 		W=GetMat(W,idx_global,idx_global);
 		llt.compute(W+Kinv);
 		L = llt.matrixL(); //no need to extract the triangular matrix here
-		//cout<<"L"<<endl<<L<<endl;
 		fvis=llt.solve(GetVec(deriv,idx_global)+W*fvis);
-		//cout<<"fvis"<<endl<<fvis<<endl;
 		for(int w=0;w<idx_global.rows();w++)
 		{
 			f(idx_global(w))=fvis(w);	
 		}
-				//cout<<"f"<<endl<<f<<endl;
 		loglike =log_likelihood( sigma, all_pairs, idx_global_1, idx_global_2,M, N);
 		psi_new = loglike - 0.5 * fvis.transpose()*Kinv*fvis; 
 	}

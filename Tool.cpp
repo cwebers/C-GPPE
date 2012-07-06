@@ -14,8 +14,25 @@
 
 
 
+column_vector EigentoDlib(VectorXd a)
+{
+	column_vector b(a.rows());
+	for(int i=0;i<a.rows();i++)
+	{
+	b(i)=a(i);
+	}
+	return b;
+}
 
-
+VectorXd DlibtoEigen(column_vector a)
+{
+	VectorXd b(a.size());
+	for(int i=0;i<b.rows();i++)
+	{
+	b(i)=a(i);
+	}
+	return b;
+}
 
 void GetTheta(VectorXd& theta_t,VectorXd& theta_x,double& sigma ,VectorXd& theta)
 {

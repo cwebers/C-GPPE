@@ -14,19 +14,30 @@
 #define __Tool_H__
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include "dlib/optimization.h"
 #include <iostream>
 #include <string>
 #include <cmath>
-#include "Covfunc.h"
 using namespace std;
+using namespace dlib;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using Eigen::SparseMatrix;
 using Eigen::Dynamic;
 using Eigen::Matrix;
+#include <iostream>
+#include <cmath>
+#include <time.h>
+using Eigen::LLT;
+
+
 
 // typdef for the preference pairs : dynamic vectors of dynamic matrices
 typedef Matrix<Matrix<double,Dynamic,2>,Dynamic,1> TypePair;
+
+//typedef for the vector type in dlib
+typedef matrix<double,0,1> column_vector;
+
 
 //no classed yet
 
@@ -48,6 +59,8 @@ VectorXd sub2ind(int dimrow,int dimcol, VectorXd setrow,VectorXd setcol);
 VectorXd concatmat(const MatrixXd& a );
 void GetTheta(VectorXd& theta_x,VectorXd& theta_t,double& sigma ,VectorXd& theta);
 VectorXd concatTheta(const VectorXd& theta_t,const  VectorXd& theta_x, double sigma);
+column_vector EigentoDlib(VectorXd a);
+VectorXd DlibtoEigen(column_vector a);
 
 //Maths functions
 

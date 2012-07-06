@@ -12,19 +12,8 @@
 // under the License.
 #ifndef __Covfunc_H__
 #define __Covfunc_H__
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <time.h>
-using namespace std;
-using Eigen::VectorXd;
-using Eigen::MatrixXd;
-using Eigen::SparseMatrix;
-using Eigen::Dynamic;
-using Eigen::LLT;
-using Eigen::Matrix;
+#include "Tool.h"
+
 class Covfunc
 {
 	public :

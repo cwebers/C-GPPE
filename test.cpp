@@ -11,9 +11,150 @@
 // License for the specific language governing rights and limitations
 // under the License.
 
-#include "Covfunc.h"
-#include "Gppe.h"
+
 #include "Learn.h"
+
+int testopt2()
+{
+	    //generating the data naively
+
+    int M = 3;
+    int N = 2;
+    double sigma = 0.1;
+    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    TypePair all_pairs(2);
+    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd theta = VectorXd::Zero(8);
+    theta(7)=0.1;
+    VectorXd theta_first=theta;
+
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    pairs << 0, 1;
+    tstar<< 0.2501, 1.4168;
+    all_pairs(0) = pairs;
+    all_pairs(1) = pairs;
+
+
+    idx_global_1 << 0, 2;
+    idx_global_2 << 1, 3;
+    idx_global << 0, 1, 2, 3;
+    ind_t << 0, 0, 1, 1;
+    ind_x << 0, 1, 0, 1;
+    Learn l=Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
+
+
+        column_vector starting_point;
+
+        // Finally, lets try the BOBYQA algorithm.  This is a technique specially
+        // designed to minimize a function in the absence of derivative information.  
+        // Generally speaking, it is the method of choice if derivatives are not available.
+        starting_point =  EigentoDlib(theta_first);
+        find_min_bobyqa(Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N), 
+                        starting_point, 
+                        9,    // number of interpolation points
+                        uniform_matrix<double>(7,1, -1e100),  // lower bound constraint
+                        uniform_matrix<double>(7,1, 1e100),   // upper bound constraint
+                        10,    // initial trust region radius
+                        1e-6,  // stopping trust region radius
+                        100    // max number of objective function evaluations
+        );
+        cout << starting_point << endl;
+	return 0;
+}
+
+int testopt()
+{
+    //generating the data naively
+
+    int M = 3;
+    int N = 2;
+    double sigma = 0.1;
+    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    TypePair all_pairs(2);
+    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1,2);
+    VectorXd theta_x = VectorXd::Zero(4);
+    VectorXd theta_t = VectorXd::Zero(3);
+    VectorXd theta = VectorXd::Zero(8);
+    theta(7)=-2.3026;
+    VectorXd theta_first=theta;
+
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    pairs << 0, 1;
+    tstar<< 0.2501, 1.4168;
+    all_pairs(0) = pairs;
+    all_pairs(1) = pairs;
+
+
+    idx_global_1 << 0, 2;
+    idx_global_2 << 1, 3;
+    idx_global << 0, 1, 2, 3;
+    ind_t << 0, 0, 1, 1;
+    ind_x << 0, 1, 0, 1;
+    Learn l=Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
+
+
+
+
+
+ 
+        // Now lets try doing it again with a different starting point and the version
+        // of find_min() that doesn't require you to supply a derivative function.  
+        // This version will compute a numerical approximation of the derivative since 
+        // we didn't supply one to it.
+        column_vector starting_point;
+        starting_point = EigentoDlib(theta_first);
+        find_min_using_approximate_derivatives(cg_search_strategy(),
+                                               objective_delta_stop_strategy(1e-7),
+Learn(new CovSEard(), new CovSEard(),
+	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N), starting_point, INT_MIN);
+        // Again the correct minimum point is found and stored in starting_point
+        cout << starting_point << endl;
+
+ 	return 0;
+}
+
+int testcovderiv()
+{
+	
+	VectorXd theta_x= VectorXd::Zero(4);
+	MatrixXd x(2,3);
+	x(0, 0) = 2.4582;
+    x(0, 1) = -4.0911;
+    x(0, 2) = 1.0004;
+    x(1, 0) = 6.1426;
+    x(1, 1) = -6.3481;
+    x(1, 2) = -4.7591;
+    MatrixXd t(2,3);
+    t.fill(1);
+    CovSEard a=CovSEard(theta_x);
+    dsp(a.ComputeGrandMatrix(x),"res");
+	return 0;
+}
 int testgradnl()
 {
     //generating the data naively
@@ -53,7 +194,7 @@ int testgradnl()
     Learn l=Learn(new CovSEard(), new CovSEard(),
 	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
 	
-	dsp(l.negative_marginal_log_likelihood(theta),"nl");
+	dsp(l.negative_marginal_log_likelihood(EigentoDlib(theta)),"nl");
 	return 0;
 }
 
@@ -100,7 +241,7 @@ int testnl()
     Learn l=Learn(new CovSEard(), new CovSEard(),
 	t,x,all_pairs,idx_global,idx_global_1,idx_global_2,ind_t,ind_x,M,N);
 	
-	dsp(l.negative_marginal_log_likelihood(theta),"nl");
+	dsp(l.negative_marginal_log_likelihood(EigentoDlib(theta)),"nl");
 	return 0;
 }
 
@@ -633,13 +774,16 @@ int main()
     //testvoidfunctions();
     //testpredict_gppe_laplace_fast();
     //testapproc_gppe_laplace_fast();
-	//bigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
+	//cbigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
 	//testpredictive_utility();
 	//testNaNValue();
 	//testmatrixmultiplication();
 	//findvalue();
 	//testgendata();
 	//testnl();
-	testgradnl();
+	//testgradnl();
+	//testcovderiv();
+	 testopt();
+	 //testopt2();
 }
 

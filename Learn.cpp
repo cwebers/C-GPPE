@@ -12,6 +12,11 @@
 // under the License.
 #include "Learn.h"
 
+Learn::Learn()
+{
+
+}
+
 
 Learn::Learn(Covfunc *Covt,Covfunc *Covx,
 	MatrixXd T,MatrixXd X,TypePair All_pairs,VectorXd Idx_global,VectorXd Idx_global_1,
@@ -36,9 +41,9 @@ Learn::~Learn()
 
 }
 
-
-double Learn::negative_marginal_log_likelihood(VectorXd theta)
+const double Learn::negative_marginal_log_likelihood(const column_vector& dltheta)
 {
+	VectorXd theta=DlibtoEigen(dltheta);
 	VectorXd theta_x, theta_t;
 	double sigma;
 	GetTheta(theta_x, theta_t, sigma, theta);
@@ -99,11 +104,25 @@ VectorXd Learn::gradient_negative_marginal_loglikelihood(VectorXd theta)
 
 }
 
+/*
+VectorXd Learn::Optimize(VectorXd theta_first)
+{
+		
 
+        // Now lets try doing it again with a different starting point and the version
+        // of find_min() that doesn't require you to supply a derivative function.  
+        // This version will compute a numerical approximation of the derivative since 
+        // we didn't supply one to it.
+        column_vector starting_point;
+        starting_point = EigentoDlib(theta_first);
+        find_min_using_approximate_derivatives(bfgs_search_strategy(),
+                                               objective_delta_stop_strategy(1e-7),
+                                               &negative_marginal_log_likelihood, starting_point, -1);
+        // Again the correct minimum point is found and stored in starting_point
+        cout << starting_point << endl;
 
-
-
-
+}
+*/
 
 
 
