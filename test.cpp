@@ -21,14 +21,21 @@ int testopt2()
     int M = 3;
     int N = 2;
     double sigma = 0.1;
+
+    const int user_dimension = 2;
+    const int item_dimension = 3;
+    const int noise_dimension = 1;
+    
+    const int number_of_parameters = (user_dimension+1) + (item_dimension+1) + noise_dimension;
+    
     Gppe g = Gppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(2);
     VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-    VectorXd theta_x = VectorXd::Zero(4);
-    VectorXd theta_t = VectorXd::Zero(3);
-    VectorXd theta = VectorXd::Zero(8);
-    theta(7) = 0.1;
+    VectorXd theta_x = VectorXd::Ones(4);
+    VectorXd theta_t = VectorXd::Ones(3);
+    VectorXd theta = VectorXd::Ones(8);
+    theta(7) = -2.3;
     VectorXd theta_first = theta;
 
     t(0, 0) = -0.7258;
@@ -52,8 +59,8 @@ int testopt2()
     idx_global << 0, 1, 2, 3;
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
-    Learn l = Learn(new CovSEard(), new CovSEard(),
-                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+//    Learn l = Learn(new CovSEard(), new CovSEard(),
+//                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
 
     column_vector starting_point;
@@ -62,15 +69,16 @@ int testopt2()
     // designed to minimize a function in the absence of derivative information.
     // Generally speaking, it is the method of choice if derivatives are not available.
     starting_point =  EigentoDlib(theta_first);
+    
     find_min_bobyqa(Learn(new CovSEard(), new CovSEard(),
                           t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N),
                     starting_point,
-                    9,    // number of interpolation points
-                    uniform_matrix<double>(7, 1, -1e100), // lower bound constraint
-                    uniform_matrix<double>(7, 1, 1e100),  // upper bound constraint
+                    15,    // number of interpolation points
+                    uniform_matrix<double>(number_of_parameters, 1, -1e100), // lower bound constraint
+                    uniform_matrix<double>(number_of_parameters, 1,  1e100),  // upper bound constraint
                     10,    // initial trust region radius
                     1e-6,  // stopping trust region radius
-                    100    // max number of objective function evaluations
+                    1000000    // max number of objective function evaluations
                    );
     cout << starting_point << endl;
     return 0;
@@ -781,7 +789,7 @@ int main()
     //testnl();
     //testgradnl();
     //testcovderiv();
-    testopt();
-    //testopt2();
+    //testopt();
+    testopt2();
 }
 
