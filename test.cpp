@@ -12,77 +12,130 @@
 // under the License.
 
 
-#include "Learn.h"
+#include "CLearner.h"
 
-int testopt2()
+//int testopt2()
+//{
+//    //generating the data naively
+//
+//    int M = 3;
+//    int N = 2;
+//    double sigma = 0.1;
+//
+//    const int user_dimension = 2;
+//    const int item_dimension = 3;
+//    const int noise_dimension = 1;
+//    
+//    const int number_of_parameters = (user_dimension+1) + (item_dimension+1) + noise_dimension;
+//    
+//    Gppe g = Gppe(new CovSEard(), new CovSEard());
+//    TypePair all_pairs(2);
+//    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+//    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+//    VectorXd theta_x = VectorXd::Ones(4);
+//    VectorXd theta_t = VectorXd::Ones(3);
+//    VectorXd theta = VectorXd::Ones(8);
+//    theta(7) = -2.3;
+//    VectorXd theta_first = theta;
+//
+//    t(0, 0) = -0.7258;
+//    t(0, 1) = -1.9623;
+//    t(1, 0) = -0.3078;
+//    t(1, 1) = -0.9332;
+//    x(0, 0) = 2.4582;
+//    x(0, 1) = -4.0911;
+//    x(0, 2) = 1.0004;
+//    x(1, 0) = 6.1426;
+//    x(1, 1) = -6.3481;
+//    x(1, 2) = -4.7591;
+//    pairs << 0, 1;
+//    tstar << 0.2501, 1.4168;
+//    all_pairs(0) = pairs;
+//    all_pairs(1) = pairs;
+//
+//
+//    idx_global_1 << 0, 2;
+//    idx_global_2 << 1, 3;
+//    idx_global << 0, 1, 2, 3;
+//    ind_t << 0, 0, 1, 1;
+//    ind_x << 0, 1, 0, 1;
+//    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+//                          t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+//
+//
+//    column_vector starting_point;
+//
+//    // Finally, lets try the BOBYQA algorithm.  This is a technique specially
+//    // designed to minimize a function in the absence of derivative information.
+//    // Generally speaking, it is the method of choice if derivatives are not available.
+//    starting_point =  EigentoDlib(theta_first);
+//    
+//    find_min_bobyqa(learner,
+//                    starting_point,
+//                    15,    // number of interpolation points
+//                    uniform_matrix<double>(number_of_parameters, 1, -1e100), // lower bound constraint
+//                    uniform_matrix<double>(number_of_parameters, 1,  1e100),  // upper bound constraint
+//                    10,    // initial trust region radius
+//                    1e-6,  // stopping trust region radius
+//                    1000000    // max number of objective function evaluations
+//                   );
+//    cout << starting_point << endl;
+//    return 0;
+//}
+
+//  Wrapper for negative log likelihood
+class CNLL_Function
 {
-    //generating the data naively
-
-    int M = 3;
-    int N = 2;
-    double sigma = 0.1;
-
-    const int user_dimension = 2;
-    const int item_dimension = 3;
-    const int noise_dimension = 1;
+    /*
+     This object is an example of what is known as a "function object" in C++.
+     It is simply an object with an overloaded operator().  This means it can 
+     be used in a way that is similar to a normal C function.  The interesting
+     thing about this sort of function is that it can have state.  
+     */
+public:
     
-    const int number_of_parameters = (user_dimension+1) + (item_dimension+1) + noise_dimension;
+    CNLL_Function ( const CLearner & learner) : _learner(learner)
+    {
+    }
     
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
-    TypePair all_pairs(2);
-    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-    VectorXd theta_x = VectorXd::Ones(4);
-    VectorXd theta_t = VectorXd::Ones(3);
-    VectorXd theta = VectorXd::Ones(8);
-    theta(7) = -2.3;
-    VectorXd theta_first = theta;
-
-    t(0, 0) = -0.7258;
-    t(0, 1) = -1.9623;
-    t(1, 0) = -0.3078;
-    t(1, 1) = -0.9332;
-    x(0, 0) = 2.4582;
-    x(0, 1) = -4.0911;
-    x(0, 2) = 1.0004;
-    x(1, 0) = 6.1426;
-    x(1, 1) = -6.3481;
-    x(1, 2) = -4.7591;
-    pairs << 0, 1;
-    tstar << 0.2501, 1.4168;
-    all_pairs(0) = pairs;
-    all_pairs(1) = pairs;
-
-
-    idx_global_1 << 0, 2;
-    idx_global_2 << 1, 3;
-    idx_global << 0, 1, 2, 3;
-    ind_t << 0, 0, 1, 1;
-    ind_x << 0, 1, 0, 1;
-//    Learn l = Learn(new CovSEard(), new CovSEard(),
-//                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-
-
-    column_vector starting_point;
-
-    // Finally, lets try the BOBYQA algorithm.  This is a technique specially
-    // designed to minimize a function in the absence of derivative information.
-    // Generally speaking, it is the method of choice if derivatives are not available.
-    starting_point =  EigentoDlib(theta_first);
+    double operator() ( const column_vector & arg) const
+    {
+        //  return the mean squared error between the target vector and the input vector
+        //  return _learner(arg);
+        return ((CLearner)_learner).negative_marginal_log_likelihood(arg);
+    }
     
-    find_min_bobyqa(Learn(new CovSEard(), new CovSEard(),
-                          t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N),
-                    starting_point,
-                    15,    // number of interpolation points
-                    uniform_matrix<double>(number_of_parameters, 1, -1e100), // lower bound constraint
-                    uniform_matrix<double>(number_of_parameters, 1,  1e100),  // upper bound constraint
-                    10,    // initial trust region radius
-                    1e-6,  // stopping trust region radius
-                    1000000    // max number of objective function evaluations
-                   );
-    cout << starting_point << endl;
-    return 0;
-}
+private:
+    CLearner _learner;
+};
+
+
+//  Wrapper for grad negative log likelihood
+class CGradNLL_Function
+{
+    /*
+     This object is an example of what is known as a "function object" in C++.
+     It is simply an object with an overloaded operator().  This means it can 
+     be used in a way that is similar to a normal C function.  The interesting
+     thing about this sort of function is that it can have state.  
+     */
+public:
+    
+    CGradNLL_Function ( const CLearner & learner) :_learner(learner)
+    {
+    }
+    
+    column_vector operator() ( const column_vector & arg) const
+    {
+        //  return the mean squared error between the target vector and the input vector
+        //  return _learner(arg);
+        return ((CLearner)_learner).gradient_negative_marginal_loglikelihood(arg);
+    }
+    
+private:
+    CLearner _learner;
+};
+
 
 int testopt()
 {
@@ -123,7 +176,7 @@ int testopt()
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
 
-    Learn learner = Learn(new CovSEard(), new CovSEard(),
+    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
                           t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     // Now lets try doing it again with a different starting point and the version
@@ -132,12 +185,17 @@ int testopt()
     // we didn't supply one to it.
     column_vector starting_point;
     starting_point = EigentoDlib(theta_first);
+
+//    find_min_using_approximate_derivatives(bfgs_search_strategy(),
+//                                           objective_delta_stop_strategy(1e-7),
+//                                           learner, 
+//                                           starting_point, INT_MIN);    
+ 
     find_min_using_approximate_derivatives(bfgs_search_strategy(),
                                            objective_delta_stop_strategy(1e-7),
-                                           Learn(new CovSEard(), new CovSEard(),
-                                                 t, x, all_pairs,
-                                                 idx_global, idx_global_1, idx_global_2,
-                                                 ind_t, ind_x, M, N), starting_point, INT_MIN);
+                                           CNLL_Function(learner), 
+                                           starting_point, INT_MIN);    
+    
     // Again the correct minimum point is found and stored in starting_point
     cout << starting_point << endl;
 
@@ -161,95 +219,96 @@ int testcovderiv()
     dsp(a.ComputeGrandMatrix(x), "res");
     return 0;
 }
-int testgradnl()
-{
-    //generating the data naively
 
-    int M = 3;
-    int N = 2;
-    double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
-    TypePair all_pairs(2);
-    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-    VectorXd theta_x = VectorXd::Zero(4);
-    VectorXd theta_t = VectorXd::Zero(3);
-    VectorXd theta = VectorXd::Zero(8);
-    theta(7) = 0.1;
-    t(0, 0) = -0.7258;
-    t(0, 1) = -1.9623;
-    t(1, 0) = -0.3078;
-    t(1, 1) = -0.9332;
-    x(0, 0) = 2.4582;
-    x(0, 1) = -4.0911;
-    x(0, 2) = 1.0004;
-    x(1, 0) = 6.1426;
-    x(1, 1) = -6.3481;
-    x(1, 2) = -4.7591;
-    pairs << 0, 1;
-    tstar << 0.2501, 1.4168;
-    all_pairs(0) = pairs;
-    all_pairs(1) = pairs;
-
-
-    idx_global_1 << 0, 2;
-    idx_global_2 << 1, 3;
-    idx_global << 0, 1, 2, 3;
-    ind_t << 0, 0, 1, 1;
-    ind_x << 0, 1, 0, 1;
-    Learn l = Learn(new CovSEard(), new CovSEard(),
-                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-
-    dsp(l.negative_marginal_log_likelihood(EigentoDlib(theta)), "nl");
-    return 0;
-}
-
-
-
+//int testgradnl()
+//{
+//    //generating the data naively
+//
+//    int M = 3;
+//    int N = 2;
+//    double sigma = 0.1;
+//    Gppe g = Gppe(new CovSEard(), new CovSEard());
+//    TypePair all_pairs(2);
+//    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+//    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+//    VectorXd theta_x = VectorXd::Zero(4);
+//    VectorXd theta_t = VectorXd::Zero(3);
+//    VectorXd theta = VectorXd::Zero(8);
+//    theta(7) = 0.1;
+//    t(0, 0) = -0.7258;
+//    t(0, 1) = -1.9623;
+//    t(1, 0) = -0.3078;
+//    t(1, 1) = -0.9332;
+//    x(0, 0) = 2.4582;
+//    x(0, 1) = -4.0911;
+//    x(0, 2) = 1.0004;
+//    x(1, 0) = 6.1426;
+//    x(1, 1) = -6.3481;
+//    x(1, 2) = -4.7591;
+//    pairs << 0, 1;
+//    tstar << 0.2501, 1.4168;
+//    all_pairs(0) = pairs;
+//    all_pairs(1) = pairs;
+//
+//
+//    idx_global_1 << 0, 2;
+//    idx_global_2 << 1, 3;
+//    idx_global << 0, 1, 2, 3;
+//    ind_t << 0, 0, 1, 1;
+//    ind_x << 0, 1, 0, 1;
+//    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+//                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+//
+//    dsp(learner(EigentoDlib(theta)), "nl");
+//    return 0;
+//}
 
 
 
-int testnl()
-{
-    //generating the data naively
-    int M = 3;
-    int N = 2;
-    double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
-    TypePair all_pairs(2);
-    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-    VectorXd theta_x = VectorXd::Zero(4);
-    VectorXd theta_t = VectorXd::Zero(3);
-    VectorXd theta = VectorXd::Zero(8);
-    theta(7) = 0.1;
-    t(0, 0) = -0.7258;
-    t(0, 1) = -1.9623;
-    t(1, 0) = -0.3078;
-    t(1, 1) = -0.9332;
-    x(0, 0) = 2.4582;
-    x(0, 1) = -4.0911;
-    x(0, 2) = 1.0004;
-    x(1, 0) = 6.1426;
-    x(1, 1) = -6.3481;
-    x(1, 2) = -4.7591;
-    pairs << 0, 1;
-    tstar << 0.2501, 1.4168;
-    all_pairs(0) = pairs;
-    all_pairs(1) = pairs;
 
 
-    idx_global_1 << 0, 2;
-    idx_global_2 << 1, 3;
-    idx_global << 0, 1, 2, 3;
-    ind_t << 0, 0, 1, 1;
-    ind_x << 0, 1, 0, 1;
-    Learn l = Learn(new CovSEard(), new CovSEard(),
-                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
-    dsp(l.negative_marginal_log_likelihood(EigentoDlib(theta)), "nl");
-    return 0;
-}
+//int testnl()
+//{
+//    //generating the data naively
+//    int M = 3;
+//    int N = 2;
+//    double sigma = 0.1;
+//    Gppe g = Gppe(new CovSEard(), new CovSEard());
+//    TypePair all_pairs(2);
+//    VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+//    MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+//    VectorXd theta_x = VectorXd::Zero(4);
+//    VectorXd theta_t = VectorXd::Zero(3);
+//    VectorXd theta = VectorXd::Zero(8);
+//    theta(7) = 0.1;
+//    t(0, 0) = -0.7258;
+//    t(0, 1) = -1.9623;
+//    t(1, 0) = -0.3078;
+//    t(1, 1) = -0.9332;
+//    x(0, 0) = 2.4582;
+//    x(0, 1) = -4.0911;
+//    x(0, 2) = 1.0004;
+//    x(1, 0) = 6.1426;
+//    x(1, 1) = -6.3481;
+//    x(1, 2) = -4.7591;
+//    pairs << 0, 1;
+//    tstar << 0.2501, 1.4168;
+//    all_pairs(0) = pairs;
+//    all_pairs(1) = pairs;
+//
+//
+//    idx_global_1 << 0, 2;
+//    idx_global_2 << 1, 3;
+//    idx_global << 0, 1, 2, 3;
+//    ind_t << 0, 0, 1, 1;
+//    ind_x << 0, 1, 0, 1;
+//    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+//                    t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+//
+//    dsp(learner(EigentoDlib(theta)), "nl");
+//    return 0;
+//}
 
 
 int findvalue()
@@ -789,7 +848,7 @@ int main()
     //testnl();
     //testgradnl();
     //testcovderiv();
-    //testopt();
-    testopt2();
+    testopt();
+    // testopt2();
 }
 
