@@ -25,9 +25,10 @@ public :
     void SetTheta(VectorXd t);
     virtual int GetThetaLength() = 0;
     virtual double Evaluate(VectorXd t1, VectorXd t2) = 0;
-    //virtual MatrixXd GetGradient()=0;
+    virtual double grad(VectorXd p, VectorXd q, int z)=0;
     MatrixXd ComputeGrandMatrix(MatrixXd fea);
     MatrixXd Compute(MatrixXd p, MatrixXd q);
+    MatrixXd Computegrad(MatrixXd fea, int z);
     void add(int num);
 protected :
     VectorXd Theta;
@@ -55,6 +56,23 @@ public :
 
         return res;
     }
+    
+    virtual double grad(VectorXd p, VectorXd q, int z)
+    {
+        double res = 0;
+        double deriv=pow(exp(Theta(z)),2);
+        double prodsup;
+        double sum = 0;
+        double sf2 = exp(2 * Theta(Theta.rows() - 1));
+        for (int i = 0;i < p.rows();i++)
+        {
+            sum += pow((p(i) - q(i)), 2) / exp(2 * Theta(i));
+        }
+        prodsup=pow((p(z) - q(z)), 2)/pow(deriv,2);
+        res = prodsup*sf2 * exp(-0.5 * sum);
+        return res;
+    }
+        
     virtual int GetThetaLength()
     {
         return -1;
@@ -77,6 +95,12 @@ public :
 
         return res;
     }
+    
+    virtual double grad(VectorXd p, VectorXd q, int z)
+    {
+    	return -1;
+    }
+    
     virtual int GetThetaLength()
     {
         return 0;
@@ -97,6 +121,12 @@ public :
         else
             return 0;
     }
+    
+    virtual double grad(VectorXd p, VectorXd q, int z)
+    {
+    	return -1;
+    }
+    
     virtual int GetThetaLength()
     {
         return 1;
@@ -124,6 +154,13 @@ public :
 
         return res;
     }
+    
+    
+    virtual double grad(VectorXd p, VectorXd q, int z)
+    {
+    	return -1;
+    }
+    
     virtual int GetThetaLength()
     {
         return 2;
@@ -165,6 +202,11 @@ public :
         }
 
         return p_a->Evaluate(p, q) + p_b->Evaluate(p, q);
+    }
+    
+    virtual double grad(VectorXd p, VectorXd q, int z)
+    {
+    	return -1;
     }
 
     virtual int GetThetaLength()

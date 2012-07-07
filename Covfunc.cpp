@@ -81,5 +81,15 @@ MatrixXd Covfunc::Compute(MatrixXd p, MatrixXd q)
 }
 
 
-//MatrixXd Deriv()
-
+MatrixXd Covfunc::Computegrad(MatrixXd fea, int z)
+{
+    MatrixXd cov = MatrixXd::Zero(fea.rows(), fea.rows());
+    for (int i = 0;i < fea.rows();i++)
+    {
+        for (int j = 0;j < fea.rows();j++)
+        {
+            cov(i, j) = grad(fea.row(i), fea.row(j),z);
+        }
+    }
+    return cov;
+}

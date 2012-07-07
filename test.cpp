@@ -14,6 +14,23 @@
 
 #include "CLearner.h"
 
+
+int testgradcov()
+{
+	MatrixXd t(2,2);
+	VectorXd theta_t=VectorXd::Zero(3);
+    t(0, 0) = -0.7258;
+    t(0, 1) = -1.9623;
+    t(1, 0) = -0.3078;
+    t(1, 1) = -0.9332;
+    
+    CovSEard a=CovSEard(theta_t);
+    dsp(a.Computegrad(t,1),"res");
+    
+	return 0;
+}
+
+
 //int testopt2()
 //{
 // //generating the data naively
@@ -848,6 +865,7 @@ int main()
     //testnl();
     //testgradnl();
     //testcovderiv();
-    testopt();
+   // testopt();
     // testopt2();
+    testgradcov();
 }
