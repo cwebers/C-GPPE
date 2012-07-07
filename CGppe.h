@@ -10,8 +10,8 @@
 // basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 // License for the specific language governing rights and limitations
 // under the License.
-#ifndef __Gppe_H__
-#define __Gppe_H__
+#ifndef __CGppe_H__
+#define __CGppe_H__
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <iostream>
@@ -23,13 +23,13 @@ using Eigen::MatrixXd;
 using Eigen::SparseMatrix;
 
 
-class Gppe
+class CGppe
 {
 public :
-    Gppe(Covfunc *covfunc_t, Covfunc *covfunc_x);// Default Contructor
-    Gppe(VectorXd fnew, MatrixXd Kxnew, MatrixXd Kinvnew, MatrixXd Wnew, MatrixXd Lnew); //Constructor with parameters
-    Gppe(const Gppe & g); //Contructor by recopy
-    ~Gppe(); // Destructor
+    CGppe(Covfunc *covfunc_t, Covfunc *covfunc_x);// Default Contructor
+    CGppe(VectorXd fnew, MatrixXd Kxnew, MatrixXd Kinvnew, MatrixXd Wnew, MatrixXd Lnew); //Constructor with parameters
+    CGppe(const CGppe & g); //Contructor by recopy
+    ~CGppe(); // Destructor
     VectorXd Getf();
     MatrixXd GetKx();
     MatrixXd GetKinv();
@@ -56,17 +56,17 @@ public :
 
     void Predictive_Utility_Distribution(MatrixXd t, MatrixXd test_t, int N, VectorXd idx_global);
 
-    void Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
+    void Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
                               MatrixXd tstar, MatrixXd test_pair);
 
-    void Approx_Gppe_Laplace(const VectorXd& theta_x, const VectorXd& theta_t,
+    void Approx_CGppe_Laplace(const VectorXd& theta_x, const VectorXd& theta_t,
                              const double& sigma, const MatrixXd& t, const MatrixXd& x, const TypePair &all_pairs, const VectorXd &idx_global, const VectorXd& idx_global_1, const VectorXd& idx_global_2, const VectorXd& ind_t, const VectorXd& ind_x, int M, int N);
 
     double log_likelihood(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N);
 
-    VectorXd deriv_log_likelihood_gppe_fast(double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N);
+    VectorXd deriv_log_likelihood_CGppe_fast(double sigma, const TypePair & all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N);
 
-    MatrixXd deriv2_log_likelihood_gppe_fast(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N);
+    MatrixXd deriv2_log_likelihood_CGppe_fast(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N);
 
     double get_fbest(int N);
     //Variables

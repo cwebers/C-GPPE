@@ -51,8 +51,8 @@ CLearner::~CLearner()
 //    GetTheta(theta_x, theta_t, sigma, theta);
 //    covt->SetTheta(theta_t);
 //    covx->SetTheta(theta_x);
-//    Gppe g = Gppe(covt, covx);
-//    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+//    CGppe g = CGppe(covt, covx);
+//    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
 //                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 //
 //    double cond_loglike = g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
@@ -78,8 +78,8 @@ const double CLearner::negative_marginal_log_likelihood(const column_vector & po
     sigma = exp(sigma);
     covt->SetTheta(theta_t);
     covx->SetTheta(theta_x);
-    Gppe g = Gppe(covt, covx);
-    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    CGppe g = CGppe(covt, covx);
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     double cond_loglike = g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
@@ -108,7 +108,7 @@ column_vector gradient_negative_marginal_loglikelihood(const column_vector & poi
 //    GetTheta(theta_x, theta_t, sigma, theta);
 //    covt->SetTheta(theta_t);
 //    covx->SetTheta(theta_x);
-//    Gppe g = Gppe(covt, covx);
+//    CGppe g = CGppe(covt, covx);
 //    VectorXd all_diag_idx;
 //    int n = M * N;
 //    all_diag_idx = sub2ind(n, n, Nfirst(n), Nfirst(n));
@@ -118,10 +118,10 @@ column_vector gradient_negative_marginal_loglikelihood(const column_vector & poi
 //
 //
 //    // Laplace approximation to the posterior p(f | D)
-//    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+//    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
 //                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 //
-//    VectorXd deriv_loglike_vis = g.deriv_log_likelihood_gppe_fast( sigma, train_pairs, idx_global_1, idx_global_2, M, N);
+//    VectorXd deriv_loglike_vis = g.deriv_log_likelihood_CGppe_fast( sigma, train_pairs, idx_global_1, idx_global_2, M, N);
 //    deriv_loglike_vis = GetVec(deriv_loglike_vis, idx_global);
 //    MatrixXd Kt = covt->ComputeGrandMatrix(t);
 //
@@ -168,8 +168,8 @@ VectorXd Learn::Optimize(VectorXd theta_first)
 //    sigma = exp(sigma);
 //    covt->SetTheta(theta_t);
 //    covx->SetTheta(theta_x);
-//    Gppe g = Gppe(covt, covx);
-//    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+//    CGppe g = CGppe(covt, covx);
+//    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
 //                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 //
 //    double cond_loglike = g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);

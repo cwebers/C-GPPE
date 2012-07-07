@@ -28,7 +28,7 @@
 //
 // const int number_of_parameters = (user_dimension+1) + (item_dimension+1) + noise_dimension;
 //
-// Gppe g = Gppe(new CovSEard(), new CovSEard());
+// CGppe g = CGppe(new CovSEard(), new CovSEard());
 // TypePair all_pairs(2);
 // VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
 // MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
@@ -144,7 +144,7 @@ int testopt()
     int M = 3;
     int N = 2;
     double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    CGppe g = CGppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(2);
     VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
@@ -227,7 +227,7 @@ int testcovderiv()
 // int M = 3;
 // int N = 2;
 // double sigma = 0.1;
-// Gppe g = Gppe(new CovSEard(), new CovSEard());
+// CGppe g = CGppe(new CovSEard(), new CovSEard());
 // TypePair all_pairs(2);
 // VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
 // MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
@@ -274,7 +274,7 @@ int testcovderiv()
 // int M = 3;
 // int N = 2;
 // double sigma = 0.1;
-// Gppe g = Gppe(new CovSEard(), new CovSEard());
+// CGppe g = CGppe(new CovSEard(), new CovSEard());
 // TypePair all_pairs(2);
 // VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
 // MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
@@ -411,7 +411,7 @@ int testpredictive_utility()
     int M = 3;
     int N = 2;
     double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    CGppe g = CGppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(2);
     VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), train_t(3, 2), x(2, 3), tstar(1, 2), test_pair(1, 2);
@@ -445,7 +445,7 @@ int testpredictive_utility()
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
 
-    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     g.Predictive_Utility_Distribution(train_t, tstar, N, idx_global );
@@ -459,7 +459,7 @@ int testpredictive_utility()
 
 
 
-int bigapproc_gppe_laplace_fast()
+int bigapproc_CGppe_laplace_fast()
 {
     //clock_t start, end;
     //double elapsed;
@@ -468,7 +468,7 @@ int bigapproc_gppe_laplace_fast()
     int M = 4;
     int N = 4;
     double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    CGppe g = CGppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(4);
     VectorXd idx_global_1(18), idx_global_2(18), idx_global(12), ind_t(12), ind_x(12);
     MatrixXd pairs(6, 2), pairs2(6, 2), pairs3(6, 2), pairs4(6, 2), t(3, 2), x(4, 3), tstar(1, 2);
@@ -503,7 +503,7 @@ int bigapproc_gppe_laplace_fast()
     idx_global << 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;
     ind_t << 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2;
     ind_x << 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3;
-    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     dsp(g.GetW(), "W");
@@ -518,13 +518,13 @@ int bigapproc_gppe_laplace_fast()
     return 0;
 }
 
-int testpredict_gppe_laplace_fast()
+int testpredict_CGppe_laplace_fast()
 {
     //generating the data naively
     int M = 3;
     int N = 2;
     double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    CGppe g = CGppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(2);
     VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2), test_pair(1, 2);
@@ -554,10 +554,10 @@ int testpredict_gppe_laplace_fast()
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
 
-    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
-    g.Predict_Gppe_Laplace(sigma, t, x, idx_global, ind_t, ind_x, tstar, test_pair);
+    g.Predict_CGppe_Laplace(sigma, t, x, idx_global, ind_t, ind_x, tstar, test_pair);
     return 0;
 
 }
@@ -598,8 +598,8 @@ void InitMatrix(MatrixXd & mat)
     mat(11, 1) = -0.1446;
 }
 
-//Test approc_gppe_laplace_fast functions of the Gppe class need some fixing
-int testapproc_gppe_laplace_fast()
+//Test approc_CGppe_laplace_fast functions of the CGppe class need some fixing
+int testapproc_CGppe_laplace_fast()
 {
     clock_t start, end;
     double elapsed;
@@ -608,7 +608,7 @@ int testapproc_gppe_laplace_fast()
     int M = 3;
     int N = 2;
     double sigma = 0.1;
-    Gppe g = Gppe(new CovSEard(), new CovSEard());
+    CGppe g = CGppe(new CovSEard(), new CovSEard());
     TypePair all_pairs(2);
     VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
     MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
@@ -635,7 +635,7 @@ int testapproc_gppe_laplace_fast()
     idx_global << 0, 1, 2, 3;
     ind_t << 0, 0, 1, 1;
     ind_x << 0, 1, 0, 1;
-    g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
     dsp(g.GetW(), "W");
     dsp(g.GetL(), "L");
@@ -837,9 +837,9 @@ int main()
     //testCovSEard();
     //testVectors();
     //testvoidfunctions();
-    //testpredict_gppe_laplace_fast();
-    //testapproc_gppe_laplace_fast();
-    //cbigapproc_gppe_laplace_fast();// Test doesn't work anymore because of wrong index
+    //testpredict_CGppe_laplace_fast();
+    //testapproc_CGppe_laplace_fast();
+    //cbigapproc_CGppe_laplace_fast();// Test doesn't work anymore because of wrong index
     //testpredictive_utility();
     //testNaNValue();
     //testmatrixmultiplication();

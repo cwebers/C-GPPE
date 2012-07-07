@@ -16,7 +16,7 @@
 #include <Eigen/Sparse>
 #include <iostream>
 #include <string>
-#include "Gppe.h"
+#include "CGppe.h"
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
@@ -56,8 +56,8 @@ public :
 // sigma=exp(sigma);
 // covt->SetTheta(theta_t);
 // covx->SetTheta(theta_x);
-// Gppe g = Gppe(covt, covx);
-// g.Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+// CGppe g = CGppe(covt, covx);
+// g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
 //    t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 //
 //    double cond_loglike=g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);

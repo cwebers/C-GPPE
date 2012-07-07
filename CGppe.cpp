@@ -10,9 +10,9 @@
 // basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 // License for the specific language governing rights and limitations
 // under the License.
-#include "Gppe.h"
+#include "CGppe.h"
 
-Gppe::Gppe(Covfunc *Covfunc_t, Covfunc *Covfunc_x)
+CGppe::CGppe(Covfunc *Covfunc_t, Covfunc *Covfunc_x)
 {
     covfunc_t = Covfunc_t;
     covfunc_x = Covfunc_x;
@@ -20,7 +20,7 @@ Gppe::Gppe(Covfunc *Covfunc_t, Covfunc *Covfunc_x)
 
 
 
-Gppe::Gppe(const Gppe & g)
+CGppe::CGppe(const CGppe & g)
 {
     f = g.f;
     Kx = g.Kx;
@@ -29,7 +29,7 @@ Gppe::Gppe(const Gppe & g)
     L = g.L;
 }
 
-Gppe::Gppe(VectorXd fnew, MatrixXd Kxnew, MatrixXd Kinvnew, MatrixXd Wnew, MatrixXd Lnew)
+CGppe::CGppe(VectorXd fnew, MatrixXd Kxnew, MatrixXd Kinvnew, MatrixXd Wnew, MatrixXd Lnew)
 {
     f = fnew;
     Kx = Kxnew;
@@ -39,59 +39,59 @@ Gppe::Gppe(VectorXd fnew, MatrixXd Kxnew, MatrixXd Kinvnew, MatrixXd Wnew, Matri
 
 }
 
-Gppe::~Gppe()
+CGppe::~CGppe()
 {
 
 }
 
 
-VectorXd Gppe::Getf()
+VectorXd CGppe::Getf()
 {
     return f;
 }
 
-MatrixXd Gppe::GetW()
+MatrixXd CGppe::GetW()
 {
     return W;
 }
 
-MatrixXd Gppe::GetL()
+MatrixXd CGppe::GetL()
 {
     return L;
 }
 
-LLT<MatrixXd> Gppe::Getllt()
+LLT<MatrixXd> CGppe::Getllt()
 {
     return llt;
 }
 
-MatrixXd Gppe::GetKinv()
+MatrixXd CGppe::GetKinv()
 {
     return Kinv;
 }
 
-MatrixXd Gppe::GetKx()
+MatrixXd CGppe::GetKx()
 {
     return Kx;
 }
 
-VectorXd Gppe::Getmustar()
+VectorXd CGppe::Getmustar()
 {
     return mustar;
 }
 
-VectorXd Gppe::Getvarstar()
+VectorXd CGppe::Getvarstar()
 {
     return varstar;
 }
 
-double Gppe::Getp()
+double CGppe::Getp()
 {
     return p;
 }
 
 
-double Gppe::get_fbest(int N)
+double CGppe::get_fbest(int N)
 {
     VectorXd ftest;
     double fbest;
@@ -103,7 +103,7 @@ double Gppe::get_fbest(int N)
     return fbest;
 }
 
-double Gppe::maximum_expected_improvement(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
+double CGppe::maximum_expected_improvement(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
         const MatrixXd& t, const MatrixXd & x, const VectorXd& idx_global, const VectorXd& ind_t, const VectorXd& ind_x, MatrixXd tstar, int N, double fbest)
 {
     VectorXd idx_xstar(N);
@@ -144,7 +144,7 @@ double Gppe::maximum_expected_improvement(const VectorXd & theta_x, const Vector
     return mei;
 }
 
-double Gppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
+double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
                           const MatrixXd& t, const MatrixXd & x, const TypePair& train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest)
 {
     int M = t.rows();
@@ -154,7 +154,7 @@ double Gppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, con
     double mei = 0;
     double p_12, p_21, mei_12, mei_21;
 
-    Predict_Gppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, tstar, test_pair);
+    Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, tstar, test_pair);
     p_12 = p;
     p_21 = 1 - p_12;
     MatrixXd inter(train_pairs(M).rows() + 1, 2);
@@ -164,7 +164,7 @@ double Gppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, con
     unique(idx_global, idx_global_1, idx_global_2);
     ind2sub(ind_x, ind_t, N, M, idx_global);
 
-    Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     mei_12 = maximum_expected_improvement(theta_x, theta_t, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
@@ -181,7 +181,7 @@ double Gppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, con
 
 
 
-    Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     mei_21 = maximum_expected_improvement(theta_x, theta_t, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
@@ -190,7 +190,7 @@ double Gppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, con
     return (p_12*mei_12 + p_21*mei_21) - mei ;
 }
 
-void Gppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs
+void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs
                    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle )
 {
     int N = x.rows();
@@ -220,7 +220,7 @@ void Gppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const doub
     for (int iter = 0;iter <= Maxiter;iter++)
     {
 
-        Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+        Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                              t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
 
 
@@ -263,7 +263,7 @@ void Gppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const doub
 }
 
 
-void Gppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,
+void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,
                                      const VectorXd & idx_global, const VectorXd& idx_global_1, const VectorXd& idx_global_2,
                                      const VectorXd& ind_t, const VectorXd& ind_x, const MatrixXd & test_t, const MatrixXd& idx_pairs, const VectorXd& ftrue, const VectorXd& ytrue)
 {
@@ -278,13 +278,13 @@ void Gppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& t
     VectorXd ypred = VectorXd::Zero(Npairs);
     VectorXd sum = VectorXd::Zero(N);
     VectorXd count = VectorXd::Zero(N);
-    Approx_Gppe_Laplace( theta_x, theta_t, sigma,
+    Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
 
     for (int i = 0;i < Npairs;i++)
     {
         pair = idx_pairs.row(i);
-        Predict_Gppe_Laplace(sigma, train_t, x, idx_global, ind_t, ind_x,
+        Predict_CGppe_Laplace(sigma, train_t, x, idx_global, ind_t, ind_x,
                              test_t, pair);
         P(i) = p;
         //Fstar(pair(0),i)=mustar(0);
@@ -313,7 +313,7 @@ void Gppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& t
 
 
 
-void Gppe::Predictive_Utility_Distribution(MatrixXd t, MatrixXd tstar, int N, VectorXd idx_global)
+void CGppe::Predictive_Utility_Distribution(MatrixXd t, MatrixXd tstar, int N, VectorXd idx_global)
 {
     int Kt_ss = 1;
     VectorXd idx_xstar(N);
@@ -338,7 +338,7 @@ void Gppe::Predictive_Utility_Distribution(MatrixXd t, MatrixXd tstar, int N, Ve
 }
 
 
-void Gppe::Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
+void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
                                 MatrixXd tstar, MatrixXd test_pair)
 {
     int Kt_ss = 1;
@@ -370,7 +370,7 @@ void Gppe::Predict_Gppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd i
 
 
 
-void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& t, const MatrixXd &x, const TypePair & all_pairs,
+void CGppe::Approx_CGppe_Laplace(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& t, const MatrixXd &x, const TypePair & all_pairs,
                                const VectorXd & idx_global, const VectorXd& idx_global_1, const VectorXd& idx_global_2,
                                const VectorXd& ind_t, const VectorXd& ind_x, int M, int N)
 {
@@ -398,8 +398,8 @@ void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x, const VectorXd& theta_t
     while ((psi_new - psi_old) > eps)
     {
         psi_old = psi_new;
-        deriv = deriv_log_likelihood_gppe_fast( sigma, all_pairs, idx_global_1, idx_global_2, M, N);
-        W = -deriv2_log_likelihood_gppe_fast(sigma, all_pairs, idx_global_1, idx_global_2, M, N);
+        deriv = deriv_log_likelihood_CGppe_fast( sigma, all_pairs, idx_global_1, idx_global_2, M, N);
+        W = -deriv2_log_likelihood_CGppe_fast(sigma, all_pairs, idx_global_1, idx_global_2, M, N);
         W = GetMat(W, idx_global, idx_global);
         llt.compute(W + Kinv);
         L = llt.matrixL(); //no need to extract the triangular matrix here
@@ -421,7 +421,7 @@ void Gppe::Approx_Gppe_Laplace(const VectorXd & theta_x, const VectorXd& theta_t
 
 
 
-double Gppe::log_likelihood(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+double CGppe::log_likelihood(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
 {
     M = all_pairs.rows();
     VectorXd idx_1, idx_2, z;
@@ -439,7 +439,7 @@ double Gppe::log_likelihood(double sigma, TypePair all_pairs, VectorXd idx_globa
     return loglike;
 }
 
-VectorXd Gppe::deriv_log_likelihood_gppe_fast(double sigma, const  TypePair& all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+VectorXd CGppe::deriv_log_likelihood_CGppe_fast(double sigma, const  TypePair& all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
 {
     VectorXd deriv_loglike, z, cdf_val, pdf_val, val;
     // test if idx vectors are empty ?
@@ -452,7 +452,7 @@ VectorXd Gppe::deriv_log_likelihood_gppe_fast(double sigma, const  TypePair& all
     return Get_Cumulative_Val(idx_global_1, val, n) - Get_Cumulative_Val(idx_global_2, val, n);
 }
 
-MatrixXd Gppe::deriv2_log_likelihood_gppe_fast(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
+MatrixXd CGppe::deriv2_log_likelihood_CGppe_fast(double sigma, TypePair all_pairs, VectorXd idx_global_1, VectorXd idx_global_2, int M, int N)
 {
     VectorXd deriv_loglike, z, cdf_val, pdf_val, val, ratio, all_diag_idx, ind, ind_trans;
 
