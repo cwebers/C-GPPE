@@ -22,22 +22,32 @@ using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using Eigen::SparseMatrix;
 
-class Learn
+class CLearner
 {
 public :
-    Learn();
-    Learn(Covfunc *Covt, Covfunc *Covx,
+    CLearner();
+    
+    CLearner(Covfunc *Covt, Covfunc *Covx,
           MatrixXd T, MatrixXd X, TypePair All_pairs, VectorXd Idx_global, VectorXd Idx_global_1,
           VectorXd Idx_global_2, VectorXd Ind_t, VectorXd Ind_x, int  m, int n);// Default Contructor
     //Learn(const Learn & l); //Contructor by recopy
-    ~Learn(); // Destructor
+
+    ~CLearner(); // Destructor
 
 
-    const double negative_marginal_log_likelihood(const column_vector &dltheta);
-    VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
+    //  const double negative_marginal_log_likelihood(const column_vector &dltheta);
+    const double negative_marginal_log_likelihood(const column_vector & dltheta);
+    
+    //  VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
+    column_vector gradient_negative_marginal_loglikelihood(const column_vector & theta);
 
+    //  Calculate function at point
+    // double operator() ( const column_vector & point) const;
 
-    double operator() ( const column_vector& arg) const;
+    //  Calculate gradient at point
+    // column_vector & operator() ( const column_vector& point) const;
+    // int operator() ( const column_vector & point) const;
+
 // {
 // VectorXd theta=DlibtoEigen(arg);
 // VectorXd theta_x, theta_t;
