@@ -25,7 +25,7 @@ int testgradcov()
     t(1, 1) = -0.9332;
     
     CovSEard a=CovSEard(theta_t);
-    dsp(a.Computegrad(t,1),"res");
+    dsp(a.Computegrad(t,2),"res");
     
 	return 0;
 }
@@ -146,7 +146,7 @@ public:
     {
         // return the mean squared error between the target vector and the input vector
         // return _learner(arg);
-        return ((CLearner)_learner).gradient_negative_marginal_loglikelihood(arg);
+       return ((CLearner)_learner).gradient_negative_marginal_loglikelihood(arg);
     }
     
 private:
@@ -168,7 +168,7 @@ int testopt()
     VectorXd theta_x = VectorXd::Ones(4);
     VectorXd theta_t = VectorXd::Ones(3);
     VectorXd theta = VectorXd::Ones(8);
-    theta(7) = -2.3026;
+    theta(7) = -2.30258509;
     VectorXd theta_first = theta;
 
     t(0, 0) = -0.7258;
@@ -208,9 +208,9 @@ int testopt()
 // learner,
 // starting_point, INT_MIN);
  
-    find_min_using_approximate_derivatives(bfgs_search_strategy(),
+    find_min(bfgs_search_strategy(),
                                            objective_delta_stop_strategy(1e-7),
-                                           CNLL_Function(learner),
+                                           CNLL_Function(learner),CGradNLL_Function(learner),
                                            starting_point, INT_MIN);
     
     // Again the correct minimum point is found and stored in starting_point
@@ -237,95 +237,94 @@ int testcovderiv()
     return 0;
 }
 
-//int testgradnl()
-//{
-// //generating the data naively
-//
-// int M = 3;
-// int N = 2;
-// double sigma = 0.1;
-// CGppe g = CGppe(new CovSEard(), new CovSEard());
-// TypePair all_pairs(2);
-// VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-// MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-// VectorXd theta_x = VectorXd::Zero(4);
-// VectorXd theta_t = VectorXd::Zero(3);
-// VectorXd theta = VectorXd::Zero(8);
-// theta(7) = 0.1;
-// t(0, 0) = -0.7258;
-// t(0, 1) = -1.9623;
-// t(1, 0) = -0.3078;
-// t(1, 1) = -0.9332;
-// x(0, 0) = 2.4582;
-// x(0, 1) = -4.0911;
-// x(0, 2) = 1.0004;
-// x(1, 0) = 6.1426;
-// x(1, 1) = -6.3481;
-// x(1, 2) = -4.7591;
-// pairs << 0, 1;
-// tstar << 0.2501, 1.4168;
-// all_pairs(0) = pairs;
-// all_pairs(1) = pairs;
-//
-//
-// idx_global_1 << 0, 2;
-// idx_global_2 << 1, 3;
-// idx_global << 0, 1, 2, 3;
-// ind_t << 0, 0, 1, 1;
-// ind_x << 0, 1, 0, 1;
-// CLearner learner = CLearner(new CovSEard(), new CovSEard(),
-// t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-//
-// dsp(learner(EigentoDlib(theta)), "nl");
-// return 0;
-//}
+int testgradnl()
+{
+ //generating the data naively
+
+ int M = 3;
+ int N = 2;
+ CGppe g = CGppe(new CovSEard(), new CovSEard());
+ TypePair all_pairs(2);
+ VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+ MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+ VectorXd theta_x = VectorXd::Zero(4);
+ VectorXd theta_t = VectorXd::Zero(3);
+ VectorXd theta = VectorXd::Zero(8);
+ theta(7) = -2.30258509;
+ t(0, 0) = -0.7258;
+ t(0, 1) = -1.9623;
+ t(1, 0) = -0.3078;
+ t(1, 1) = -0.9332;
+ x(0, 0) = 2.4582;
+ x(0, 1) = -4.0911;
+ x(0, 2) = 1.0004;
+ x(1, 0) = 6.1426;
+ x(1, 1) = -6.3481;
+ x(1, 2) = -4.7591;
+ pairs << 0, 1;
+ tstar << 0.2501, 1.4168;
+ all_pairs(0) = pairs;
+ all_pairs(1) = pairs;
+int Mtrain=M-1;
+
+ idx_global_1 << 0, 2;
+ idx_global_2 << 1, 3;
+ idx_global << 0, 1, 2, 3;
+ ind_t << 0, 0, 1, 1;
+ ind_x << 0, 1, 0, 1;
+ CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+	t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
+ //dsp(learner.gradient_negative_marginal_loglikelihood(EigentoDlib(theta)), "grad");
+ return 0;
+}
 
 
 
 
 
 
-//int testnl()
-//{
-// //generating the data naively
-// int M = 3;
-// int N = 2;
-// double sigma = 0.1;
-// CGppe g = CGppe(new CovSEard(), new CovSEard());
-// TypePair all_pairs(2);
-// VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-// MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-// VectorXd theta_x = VectorXd::Zero(4);
-// VectorXd theta_t = VectorXd::Zero(3);
-// VectorXd theta = VectorXd::Zero(8);
-// theta(7) = 0.1;
-// t(0, 0) = -0.7258;
-// t(0, 1) = -1.9623;
-// t(1, 0) = -0.3078;
-// t(1, 1) = -0.9332;
-// x(0, 0) = 2.4582;
-// x(0, 1) = -4.0911;
-// x(0, 2) = 1.0004;
-// x(1, 0) = 6.1426;
-// x(1, 1) = -6.3481;
-// x(1, 2) = -4.7591;
-// pairs << 0, 1;
-// tstar << 0.2501, 1.4168;
-// all_pairs(0) = pairs;
-// all_pairs(1) = pairs;
-//
-//
-// idx_global_1 << 0, 2;
-// idx_global_2 << 1, 3;
-// idx_global << 0, 1, 2, 3;
-// ind_t << 0, 0, 1, 1;
-// ind_x << 0, 1, 0, 1;
-// CLearner learner = CLearner(new CovSEard(), new CovSEard(),
-// t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-//
-// dsp(learner(EigentoDlib(theta)), "nl");
-// return 0;
-//}
+int testnl()
+{
+ //generating the data naively
+
+ int M = 3;
+ int N = 2;
+ double sigma = 0.1;
+ CGppe g = CGppe(new CovSEard(), new CovSEard());
+ TypePair all_pairs(2);
+ VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+ MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+ VectorXd theta_x = VectorXd::Zero(4);
+ VectorXd theta_t = VectorXd::Zero(3);
+ VectorXd theta = VectorXd::Zero(8);
+ theta(7) = -2.3026;
+ t(0, 0) = -0.7258;
+ t(0, 1) = -1.9623;
+ t(1, 0) = -0.3078;
+ t(1, 1) = -0.9332;
+ x(0, 0) = 2.4582;
+ x(0, 1) = -4.0911;
+ x(0, 2) = 1.0004;
+ x(1, 0) = 6.1426;
+ x(1, 1) = -6.3481;
+ x(1, 2) = -4.7591;
+ pairs << 0, 1;
+ tstar << 0.2501, 1.4168;
+ all_pairs(0) = pairs;
+ all_pairs(1) = pairs;
+
+
+ idx_global_1 << 0, 2;
+ idx_global_2 << 1, 3;
+ idx_global << 0, 1, 2, 3;
+ ind_t << 0, 0, 1, 1;
+ ind_x << 0, 1, 0, 1;
+ CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+	t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+
+ dsp(learner.negative_marginal_log_likelihood(EigentoDlib(theta)), "nl");
+ return 0;
+}
 
 
 int findvalue()
@@ -333,7 +332,7 @@ int findvalue()
     VectorXd theta(7), theta_x(3), theta_t(3);
     double sigma;
     theta << 1, 2, 3, 4, 5, 6, 7;
-    GetTheta(theta_x, theta_t, sigma, theta);
+    GetTheta(theta_x, theta_t, sigma, theta,3,3);
     dsp(theta_x, "theta_x");
     dsp(theta_t, "theta_t");
     dsp(sigma, "sigma");
@@ -865,7 +864,7 @@ int main()
     //testnl();
     //testgradnl();
     //testcovderiv();
-   // testopt();
+   	testopt();
     // testopt2();
-    testgradcov();
+    //testgradcov();
 }

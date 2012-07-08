@@ -13,6 +13,21 @@
 #include "Tool.h"
 
 
+VectorXd find(const VectorXd a, int b)
+{
+	VectorXd res;
+	int z=0;
+	for (int i=0;i<a.rows();i++)
+	{
+		if(a(i)==b)
+		{
+			Add(res,i);
+		}
+	}
+	return res;
+}
+
+
 
 column_vector EigentoDlib(VectorXd a)
 {
@@ -34,12 +49,12 @@ VectorXd DlibtoEigen(column_vector a)
     return b;
 }
 
-void GetTheta(VectorXd& theta_t, VectorXd& theta_x, double& sigma , VectorXd& theta)
+void GetTheta(VectorXd& theta_t, VectorXd& theta_x, double& sigma , VectorXd& theta, int dim_t, int dim_x)
 {
     double dim = theta.rows();
     sigma = theta(dim - 1);
-    theta_t = theta.head((dim - 1) / 2);
-    theta_x = theta.segment(dim / 2, (dim - 1) / 2);
+    theta_t = theta.head(dim_t+1);
+    theta_x = theta.segment(dim_t+1,dim_x+1);
 
 }
 
@@ -147,8 +162,8 @@ void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, 
         inter2 = (1 - ((z + ratio1).array() * (z + 2 * ratio1).array()).array());
         inter3 = 2 * ratio1.array() * (z + ratio1).array();
         inter1 = z.array() * ratio1.array();
-        val = (1 / pow(sigma, 2)) * inter1.array() * inter2.array() + inter3.array();
 
+        val = (-1 / pow(sigma, 2)) *( inter1.array() * inter2.array() + inter3.array());
         ind = sub2ind(n, n, idx_global_1, idx_global_2);
         dWdsigma = SetMatGenIdx(dWdsigma, ind, -1 * val);
 
@@ -197,7 +212,7 @@ MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx)
     return Oracle(test_idx).row(query_idx);
 }
 
-MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd ind_x, double sigma, MatrixXd pairs, int  M, int N)
+MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, int ind_t, int ind_x, double sigma, MatrixXd pairs, int  M, int N)
 {
     int n = M * N;
     MatrixXd dWdf = MatrixXd::Zero(n, n);
@@ -209,6 +224,7 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd in
 
     // We simply match those corresponding to the required f
     idx_select = find(idx_1, ind_x);
+
     if (idx_select.rows() == 0)
         idx_select = find(idx_2, ind_x);
 
@@ -218,7 +234,7 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd in
     idx_1 = GetVec(idx_1, idx_select);
     idx_2 = GetVec(idx_2, idx_select);
 
-    coeff(idx_1.rows());
+    coeff=VectorXd::Zero(idx_1.rows());
     coeff.fill(1);
     VectorXd simili = find(idx_2, ind_x);
 
@@ -230,7 +246,6 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd in
 
     idx_global_1 = ind2global(idx_1, ind_t, N);
     idx_global_2 = ind2global(idx_2, ind_t, N);
-
     z = (GetVec(f, idx_global_1) - GetVec(f, idx_global_2)) / sigma;
     pdf_val = normpdf(z);
     cdf_val = normcdf(z);
@@ -239,7 +254,6 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd in
     val = (1 / pow(sigma, 3)) * ratio1.array() * (1 - ((z + ratio1).array() * (z + 2 * ratio1).array()).array()).array();
 
     val = val.array() * coeff.array();
-
 
     ind = ind2global(idx_global_1, idx_global_2, n);
     dWdf = SetMatGenIdx(dWdf, ind, -1 * val);
@@ -252,7 +266,6 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, VectorXd ind_t, VectorXd in
 
     dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + get_cum2(idx_global_1, val, n));
     dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + get_cum2(idx_global_2, val, n));
-
     return dWdf;
 
 }
@@ -296,7 +309,7 @@ void Add(VectorXd& a, double val)
     inter << a, val;
     a = inter;
 }
-
+/*
 VectorXd find(const VectorXd& a, const VectorXd& b)
 {
     VectorXd c;
@@ -331,7 +344,7 @@ int find(const MatrixXd& a, double  val)
     if (found == false)
         idx = INT_MIN;
     return idx;
-}
+}*/
 
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c)
 {

@@ -243,7 +243,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
 
         std::ptrdiff_t query_idx;
         val = evoi.maxCoeff(&query_idx);
-        idx_good = find(evoi, val);
+       // idx_good = find(evoi, val);
         //evoi is a vector, so there isn't any multiple index argument
         //and no need for the Lgood check stuff
         is_selected(query_idx) = false;

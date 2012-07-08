@@ -38,37 +38,13 @@ public :
     //  const double negative_marginal_log_likelihood(const column_vector &dltheta);
     const double negative_marginal_log_likelihood(const column_vector & dltheta);
     
-    //  VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
-    column_vector gradient_negative_marginal_loglikelihood(const column_vector & theta);
+      //VectorXd gradient_negative_marginal_loglikelihood(VectorXd theta);
+    column_vector gradient_negative_marginal_loglikelihood(const column_vector & point);
 
-    //  Calculate function at point
-    // double operator() ( const column_vector & point) const;
 
-    //  Calculate gradient at point
-    // column_vector & operator() ( const column_vector& point) const;
-    // int operator() ( const column_vector & point) const;
-
-// {
-// VectorXd theta=DlibtoEigen(arg);
-// VectorXd theta_x, theta_t;
-// double sigma;
-// GetTheta(theta_x, theta_t, sigma, theta);
-// sigma=exp(sigma);
-// covt->SetTheta(theta_t);
-// covx->SetTheta(theta_x);
-// CGppe g = CGppe(covt, covx);
-// g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
-//    t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-//
-//    double cond_loglike=g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
-// VectorXd fvis=GetVec(g.Getf(),idx_global);
-// double margl=-0.5*(-log(g.GetKinv().determinant())+2*(log(g.GetL().diagonal().array()).sum()))
-// -0.5*fvis.transpose()*g.GetKinv()*fvis +cond_loglike;
-// dsp(-margl,"nl");
-// return -margl;
-//        return this->negative_marginal_log_likelihood(arg);
-//}
+    
     //VectorXd Optimize(VectorXd theta_first);
+  
     //Variables
 private :
     Covfunc *covx;

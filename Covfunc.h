@@ -64,6 +64,9 @@ public :
         double prodsup;
         double sum = 0;
         double sf2 = exp(2 * Theta(Theta.rows() - 1));
+        if(z==Theta.rows()-1)
+        	return 2*Evaluate(p,q)/sf2;
+        	
         for (int i = 0;i < p.rows();i++)
         {
             sum += pow((p(i) - q(i)), 2) / exp(2 * Theta(i));
