@@ -15,9 +15,77 @@
 #include "CLearner.h"
 
 
+int testreshape()
+{
+	VectorXd f(6);
+	f<<1,2,3,4,5,6;
+	dsp(reshape(f,3,2),"reshape");
+	return 0;
+}
+
+
+int testelicit()
+{
+ //generating the data naively
+
+ int M = 3;
+ int N = 2;
+ double sigma = 0.1;
+ CGppe g = CGppe(new CovSEard(), new CovSEard());
+ TypePair all_pairs(2);
+ VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
+ MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+ VectorXd theta_x = VectorXd::Zero(4);
+ VectorXd theta_t = VectorXd::Zero(3);
+ VectorXd theta = VectorXd::Zero(8);
+ theta(7) = -2.3026;
+ t(0, 0) = -0.7258;
+ t(0, 1) = -1.9623;
+ t(1, 0) = -0.3078;
+ t(1, 1) = -0.9332;
+ x(0, 0) = 2.4582;
+ x(0, 1) = -4.0911;
+ x(0, 2) = 1.0004;
+ x(1, 0) = 6.1426;
+ x(1, 1) = -6.3481;
+ x(1, 2) = -4.7591;
+ 
+ MatrixXd F(N,M);
+ F<<  1.1780  ,  0.8440,   -1.2463,
+   -1.1142  , -1.2890,   -1.8551;
+ pairs << 0, 1;
+ tstar << 0.2501, 1.4168;
+ all_pairs(0) = pairs;
+ all_pairs(1) = pairs;
+ VectorXd ftrue(2);
+ ftrue<<
+   -1.2463,
+   -1.8551;
+
+MatrixXd idx_pairs(1,2);
+idx_pairs<<0,1;
+
+VectorXd ytrue(1);
+	ytrue<<1;
+
+ idx_global_1 << 0, 2;
+ idx_global_2 << 1, 3;
+ idx_global << 0, 1, 2, 3;
+
+ ind_t << 0, 0, 1, 1;
+ ind_x << 0, 1, 0, 1;
+
+g.Elicit(theta_x, theta_t, sigma,  train_t, x, train_pairs, test_t, 
+		test_user_idx, idx_pairs, Maxiter,  Oracle, F);
+
+
+	return 0;
+}
+
+
 int testinput()
 {
-	string const namefile("/Users/christopheroustel/Desktop/C-GPPE/testmat.txt");
+	string const namefile("/Users/christopheroustel/Desktop/C-GPPE/x.txt");
 	MatrixXd z=GetData(namefile);
 	
 	dsp(z,"z");
@@ -65,8 +133,7 @@ MatrixXd idx_pairs(1,2);
 idx_pairs<<0,1;
 
 VectorXd ytrue(1);
-	ytrue<<
-     1;
+	ytrue<<1;
 
  idx_global_1 << 0, 2;
  idx_global_2 << 1, 3;
@@ -944,5 +1011,7 @@ int main()
     // testopt2();
     //testgradcov();
     //testprediction();
-    testinput();
+    //testinput();
+    //testelicit();
+   testreshape();
 }

@@ -191,7 +191,7 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
 }
 
 void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs
-                   , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle )
+                   , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle , MatrixXd F)
 {
     int N = x.rows();
     int Mtrain = train_t.rows();
@@ -201,6 +201,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
     Matrix<bool, Dynamic, 1> is_selected(Npairs);
     is_selected.fill(false);
     VectorXd loss = VectorXd::Zero(Maxiter + 1);
+    double loss_current;
     VectorXd evoi(Npairs), ind_t, ind_x;
     VectorXd idx_global_1, idx_global_2, idx_global;
     compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
@@ -257,6 +258,11 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
 
         ind2sub(ind_x, ind_t, N, M, idx_global);
 
+    
+     //Computes the loss of making a recommendation at this point
+     loss_query_toydata(loss_current, F, stop, test_user_idx, best_item_idx);
+     loss(iter)=loss_current;
+
         count++;
         cout << "Query " << count << "[" << new_pair(0) << " " << new_pair(1) << "] done, Recommended Item= " << best_item_idx << ", loss=" << loss(iter) << endl << endl;
     }
@@ -271,8 +277,6 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
     int Mtrain = train_t.rows();
     int Npairs = idx_pairs.rows();
     VectorXd fstar;
-    //MatrixXd Fstar=MatrixXd::Zero(N,Npairs);
-    //Fstar=SetNaN(Fstar);
     MatrixXd pair;
     VectorXd P = VectorXd::Zero(Npairs);
     VectorXd ypred = VectorXd::Zero(Npairs);
@@ -290,8 +294,6 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
         Predict_CGppe_Laplace(sigma, train_t, x, idx_global, ind_t, ind_x,
                              test_t, pair);
         P(i) = p;
-        //Fstar(pair(0),i)=mustar(0);
-        //Fstar(pair(1),i)=mustar(1);
         sum(pair(0)) += mustar(0);
         count(pair(0)) += 1;
         sum(pair(1)) += mustar(1);
@@ -307,7 +309,7 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
 
 //fstar=MyNaNMean(Fstar);
     fstar = sum.array() / count.array();
-
+	dsp(fstar,"fstar");
     cout << endl << endl << "error =  " << (GetDiff(ytrue, ypred)).sum() / ytrue.rows()<<endl;
     // need for a plot function here ?
 }
@@ -365,7 +367,6 @@ void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd
     Css    = Kss - kstar.transpose() * W * llt.solve(Kinv * kstar);
 
     sigma_star = sqrt(Css(0, 0) + Css(1, 1) - 2 * Css(0, 1) + pow(sigma, 2));
-    cout << sigma_star << endl;
     val = ( mustar(0) - mustar(1) ) / sigma_star;
     p   = normcdf(val);
 }

@@ -46,7 +46,7 @@ typedef matrix<double, 0, 1> column_vector;
 
 //no classed yet
 MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx);
-void loss_query_toydata(double &loss, const MatrixXd& F, bool stop, int test_user_idx, int best_item_idx);
+void loss_query_toydata(double &loss, const MatrixXd& F, bool& stop, int test_user_idx, int best_item_idx);
 
 //input functions
 int GetDataline(const string& myfile);
@@ -99,6 +99,7 @@ void ind2sub(VectorXd& ind_i, VectorXd& ind_j, int dimrow, int dimcol, VectorXd 
 VectorXd ind2global(VectorXd vec, int j, int N);
 VectorXd ind2global(VectorXd a, VectorXd b, int N);
 VectorXd Nfirst(int N);
+MatrixXd reshape(VectorXd f, int a, int b);
 
 //Debugging functions
 

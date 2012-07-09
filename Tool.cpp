@@ -13,6 +13,20 @@
 #include "Tool.h"
 
 
+MatrixXd reshape(VectorXd f, int ln, int col)
+{
+	MatrixXd a(ln,col);
+	int z=0;
+	for(int j=0;j<col;j++)
+	{
+		for(int i=0;i<ln;i++)
+		{
+			a(i,j)=f(z);
+			z++;
+		}
+	}
+	return a;
+}
 
 
 int GetDataline(const string& myfile)
