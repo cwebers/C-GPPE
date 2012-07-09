@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <iostream>
+#include <fstream>
 using namespace std;
 using namespace dlib;
 using Eigen::VectorXd;
@@ -43,9 +45,13 @@ typedef matrix<double, 0, 1> column_vector;
 
 
 //no classed yet
-
 MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx);
 void loss_query_toydata(double &loss, const MatrixXd& F, bool stop, int test_user_idx, int best_item_idx);
+
+//input functions
+int GetDataline(const string& myfile);
+int GetDatacol(const string& myfile);
+MatrixXd GetData(const string& myfile);
 
 //convenient access functions
 

@@ -13,6 +13,94 @@
 #include "Tool.h"
 
 
+
+
+int GetDataline(const string& myfile)
+{
+	int dim_line=0;
+	ifstream file(myfile.c_str());
+    if(file)
+    {
+         //L'ouverture s'est bien passée. On peut donc lire
+
+        string line;     //Une variable pour stocker les lignes lues
+
+
+        while(getline(file, line))    //as long as we aren't at the end we continue reading
+        {
+
+            dim_line++; //counting the number of line
+        }        
+    }
+    else
+    {
+        cout << "Couldn't open the file" << endl;
+    }
+
+	return dim_line;
+}
+int GetDatacol(const string& myfile)
+{
+	int dim_col=0;
+	ifstream file(myfile.c_str());
+
+    if(file)
+    {
+         //Opening is fine, so we can read the file
+		double num;
+        string line;     //storing the first line read to place the cursor in the second line
+        getline(file, line);
+        int position=file.tellg();
+        position--;
+        dsp(file.tellg(),"curseur");
+        file.seekg(0, ios::beg);//we are placing the cursor in the first line
+        dsp(file.tellg(),"curseur");
+        while(file.tellg()!=position)
+        {
+        	file>>num;
+        	dsp(file.tellg(),"curseur");
+        	dsp(num,"nombres de la 1ere ligne");
+        	dim_col++;
+        }
+    }
+    else
+    {
+        cout << "Couldn't open the file" << endl;
+    }
+	return dim_col;
+}
+
+
+MatrixXd GetData(const string& myfile)
+{
+	int dim_line=GetDataline(myfile);
+	int dim_col=GetDatacol(myfile);
+	
+	MatrixXd a=MatrixXd::Zero(dim_line,dim_col);//now we can create the Matrix
+	ifstream file(myfile.c_str());
+
+    if(file)
+    {
+        dsp(dim_col,"dim_col");
+	    dsp(file.tellg(),"curseur");
+		for(int i=0;i<dim_line;i++)
+		{
+			for (int j=0;j<dim_col;j++)
+			{
+				file>>a(i,j);
+				dsp(a(i,j),"a(i,j)");
+			}
+		}
+    }
+    else
+    {
+        cout << "Couldn't open the file" << endl;
+    }
+    
+    return a;
+}
+
+
 VectorXd find(const VectorXd a, int b)
 {
 	VectorXd res;

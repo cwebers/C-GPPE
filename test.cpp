@@ -14,6 +14,19 @@
 
 #include "CLearner.h"
 
+
+int testinput()
+{
+	string const namefile("/Users/christopheroustel/Desktop/C-GPPE/testmat.txt");
+	MatrixXd z=GetData(namefile);
+	
+	dsp(z,"z");
+	return 0;
+} 
+
+
+
+
 int testprediction()
 {
  //generating the data naively
@@ -930,5 +943,6 @@ int main()
    //	testopt();
     // testopt2();
     //testgradcov();
-    testprediction();
+    //testprediction();
+    testinput();
 }
