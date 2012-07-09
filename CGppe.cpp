@@ -263,7 +263,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
 }
 
 
-void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,
+void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,
                                      const VectorXd & idx_global, const VectorXd& idx_global_1, const VectorXd& idx_global_2,
                                      const VectorXd& ind_t, const VectorXd& ind_x, const MatrixXd & test_t, const MatrixXd& idx_pairs, const VectorXd& ftrue, const VectorXd& ytrue)
 {
@@ -273,17 +273,20 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
     VectorXd fstar;
     //MatrixXd Fstar=MatrixXd::Zero(N,Npairs);
     //Fstar=SetNaN(Fstar);
-    VectorXd pair;
+    MatrixXd pair;
     VectorXd P = VectorXd::Zero(Npairs);
     VectorXd ypred = VectorXd::Zero(Npairs);
     VectorXd sum = VectorXd::Zero(N);
     VectorXd count = VectorXd::Zero(N);
+
     Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
 
     for (int i = 0;i < Npairs;i++)
     {
         pair = idx_pairs.row(i);
+
+
         Predict_CGppe_Laplace(sigma, train_t, x, idx_global, ind_t, ind_x,
                              test_t, pair);
         P(i) = p;
@@ -305,7 +308,7 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
 //fstar=MyNaNMean(Fstar);
     fstar = sum.array() / count.array();
 
-    cout << endl << endl << "error =  " << (GetDiff(ytrue, ypred)).sum() / ytrue.rows();
+    cout << endl << endl << "error =  " << (GetDiff(ytrue, ypred)).sum() / ytrue.rows()<<endl;
     // need for a plot function here ?
 }
 
