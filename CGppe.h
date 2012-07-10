@@ -40,7 +40,7 @@ public :
     VectorXd Getvarstar();
     double Getp();
 
-    double maximum_expected_improvement(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
+    double maximum_expected_improvement(const VectorXd & theta_t, const VectorXd& theta_x, const double& sigma,
                                         const MatrixXd& t, const MatrixXd & x, const VectorXd& idx_global, const VectorXd& ind_t, const VectorXd& ind_x, MatrixXd tstar, int N, double fbest);
 
     double expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
