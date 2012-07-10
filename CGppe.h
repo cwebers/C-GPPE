@@ -44,10 +44,10 @@ public :
                                         const MatrixXd& t, const MatrixXd & x, const VectorXd& idx_global, const VectorXd& ind_t, const VectorXd& ind_x, MatrixXd tstar, int N, double fbest);
 
     double expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
-                        const MatrixXd& t, const MatrixXd & x, const TypePair& train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest);
+                        const MatrixXd& t, const MatrixXd & x, TypePair train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest);
 
 
-    void Elicit(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs
+    void Elicit(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, TypePair & train_pairs
                 , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const TypePair & Oracle, MatrixXd F);
 
     void Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,

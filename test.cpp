@@ -14,6 +14,18 @@
 
 #include "CLearner.h"
 
+int testaddrows()
+{
+	MatrixXd z(3,3), ln(1,3);
+	z<<1,2,47,
+		3,4,18,
+		5,6,19;
+		
+	ln<<2,3,777;
+	dsp(MatAdd(z,ln),"res");
+	return 0;
+}
+
 
 int testreshape()
 {
@@ -30,11 +42,13 @@ int testelicit()
 
  int M = 3;
  int N = 2;
+ int Maxiter=10;
+ int test_user_idx=2;
  double sigma = 0.1;
  CGppe g = CGppe(new CovSEard(), new CovSEard());
- TypePair all_pairs(2);
+ TypePair train_pairs(3), Oracle(3);
  VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
- MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
+ MatrixXd pairs(1, 2), t(2, 2), x(2, 3), test_t(1, 2);
  VectorXd theta_x = VectorXd::Zero(4);
  VectorXd theta_t = VectorXd::Zero(3);
  VectorXd theta = VectorXd::Zero(8);
@@ -49,14 +63,21 @@ int testelicit()
  x(1, 0) = 6.1426;
  x(1, 1) = -6.3481;
  x(1, 2) = -4.7591;
- 
+ MatrixXd train_t(2,2);
+ train_t<<   -0.7258 ,  -1.9623,
+   -0.3078 ,  -0.9332;
  MatrixXd F(N,M);
  F<<  1.1780  ,  0.8440,   -1.2463,
    -1.1142  , -1.2890,   -1.8551;
  pairs << 0, 1;
- tstar << 0.2501, 1.4168;
- all_pairs(0) = pairs;
- all_pairs(1) = pairs;
+ test_t << 0.2501, 1.4168;
+ train_pairs(0) = pairs;
+ train_pairs(1) = pairs;
+ 
+ Oracle(0) = pairs;
+ Oracle(1) = pairs;
+ Oracle(2)=pairs;
+ 
  VectorXd ftrue(2);
  ftrue<<
    -1.2463,
@@ -74,6 +95,7 @@ VectorXd ytrue(1);
 
  ind_t << 0, 0, 1, 1;
  ind_x << 0, 1, 0, 1;
+
 
 g.Elicit(theta_x, theta_t, sigma,  train_t, x, train_pairs, test_t, 
 		test_user_idx, idx_pairs, Maxiter,  Oracle, F);
@@ -1012,6 +1034,7 @@ int main()
     //testgradcov();
     //testprediction();
     //testinput();
-    //testelicit();
-   testreshape();
+    testelicit();
+   //testreshape();
+   //testaddrows();
 }

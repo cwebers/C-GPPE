@@ -100,6 +100,7 @@ VectorXd ind2global(VectorXd vec, int j, int N);
 VectorXd ind2global(VectorXd a, VectorXd b, int N);
 VectorXd Nfirst(int N);
 MatrixXd reshape(VectorXd f, int a, int b);
+MatrixXd MatAdd(MatrixXd mat, MatrixXd ln);
 
 //Debugging functions
 

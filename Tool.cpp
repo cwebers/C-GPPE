@@ -13,6 +13,27 @@
 #include "Tool.h"
 
 
+
+MatrixXd MatAdd(MatrixXd mat, MatrixXd ln)
+{
+	MatrixXd res(mat.rows()+1,mat.cols());
+	for(int i=0;i<mat.rows();i++)
+	{
+		for(int j=0;j<mat.cols();j++)
+		{
+			res(i,j)=mat(i,j);	
+		}
+	}
+	//Adding the new line
+	for(int z=0;z<mat.cols();z++)
+	{
+		res(mat.rows(),z)=ln(0,z);
+	}
+	return res;
+}
+
+
+
 MatrixXd reshape(VectorXd f, int ln, int col)
 {
 	MatrixXd a(ln,col);
@@ -501,7 +522,8 @@ void compute_global_index(VectorXd& idx_global_1, VectorXd& idx_global_2, const 
 {
     int M = all_pairs.rows();
     VectorXd inter;
-
+	idx_global_1.resize(0,0);
+	idx_global_2.resize(0,0);
     for (int j = 0;j < M;j++)
     {
 
