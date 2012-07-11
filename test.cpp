@@ -14,6 +14,45 @@
 
 #include "CLearner.h"
 
+
+
+int Prediction()
+{
+	//for measuring running time
+    clock_t start, end;
+    double elapsed;
+    start = clock();
+	//declaring the data
+	int N,M;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double sigma=0.1;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs(1, 2), test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
+ 	CGppe g=CGppe(new CovSEard(),new CovSEard());
+
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+     int test_user_idx=M-1;
+     
+     
+     
+     g.Make_Predictions_New_User(theta_x, theta_t, sigma, t, x, train_pairs,
+                                   idx_global, idx_global_1, idx_global_2,
+                                   ind_t, ind_x, test_t, idx_pairs, ftrue, ytrue);
+	
+	return 0;
+}
 int Elicitation()
 {
 	//for measuring running time
@@ -48,7 +87,7 @@ int Elicitation()
 	g.Elicit(theta_x, theta_t, sigma,  train_t, x, train_pairs, test_t, 
 		test_user_idx, idx_pairs, Maxiter,  Oracle, F);
 
-	
+	    end = clock();
 
     elapsed = ((double)end - start) / CLOCKS_PER_SEC;
     cout << "Elapsed Time :" << elapsed << endl;
@@ -88,7 +127,8 @@ int testgenerate()
 	    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                            		t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 	
-	
+	    end = clock();
+
 
     elapsed = ((double)end - start) / CLOCKS_PER_SEC;
     cout << "Elapsed Time :" << elapsed << endl;
@@ -1053,4 +1093,5 @@ int main()
    //testaddrows();
    // testgenerate();
     Elicitation();
+    //Prediction();
 }

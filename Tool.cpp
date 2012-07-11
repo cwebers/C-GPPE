@@ -477,6 +477,7 @@ void loss_query_toydata(double& loss, const MatrixXd& F, bool& stop, int test_us
 
 MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx)
 {
+	dsp(test_idx,"idx");
     return Oracle(test_idx).row(query_idx);
 }
 
