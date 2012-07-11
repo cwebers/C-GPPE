@@ -153,12 +153,11 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
     VectorXd idx_global_1, idx_global_2;
     MatrixXd tstar = t.row(M-1);
     double p_12, p_21, mei_12, mei_21;
-    Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, tstar, test_pair);
 
+    Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, tstar, test_pair);
     p_12 = p;
     p_21 = 1 - p_12;
 	train_pairs(M-1)=MatAdd(train_pairs(M-1),test_pair);
-
     compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
     unique(idx_global, idx_global_1, idx_global_2);
     ind2sub(ind_x, ind_t, N, M, idx_global);
@@ -176,13 +175,11 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
     ind2sub(ind_x, ind_t, N, M, idx_global);
 
 
-
     Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     mei_21 = maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
 
-		dsp((p_12*mei_12 + p_21*mei_21),"mei");
     return (p_12*mei_12 + p_21*mei_21) ;
 }
 
@@ -211,7 +208,6 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
 
     t.resize(M, train_t.cols());
     t << train_t, test_t;
-    
     for (int iter = 0;iter <= Maxiter;iter++)
     {
         Approx_CGppe_Laplace( theta_x, theta_t, sigma,
@@ -222,6 +218,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
         std::ptrdiff_t best_item_idx;
         foo = mustar.maxCoeff(&best_item_idx);
         double fbest = get_fbest(N);
+        MatrixXd test_pair;
 
         for (int i = 0;i < Npairs;i++)
         {
@@ -231,9 +228,10 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
                 continue;
             }
 
-            MatrixXd test_pair = idx_pairs.row(i);
+            test_pair = idx_pairs.row(i);
 
             evoi(i) = expected_voi(theta_x, theta_t, sigma, t, x, train_pairs, idx_global, ind_t, ind_x, test_pair, fbest);
+
         }
 
         std::ptrdiff_t query_idx;
@@ -341,19 +339,19 @@ void CGppe::Predictive_Utility_Distribution(MatrixXd t, MatrixXd tstar, int N, V
 void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd idx_global, VectorXd ind_t, VectorXd ind_x,
                                 MatrixXd tstar, MatrixXd test_pair)
 {
+
     int Kt_ss = 1;
     double sigma_star, val;
     MatrixXd Kx_star, Kx_star_star, kstar, Kss, Css;
     MatrixXd Kt_star = covfunc_t->Compute(t, tstar);
 
 
-
-    Kx_star = GetMatRow(Kx, test_pair.transpose()); //maybe need some transpose?
+    Kx_star = GetMatRow(Kx, test_pair.transpose()).transpose(); //maybe need some transpose?
 
     Kx_star_star = GetMat(Kx, test_pair.transpose(), test_pair.transpose()); // test to test
     kstar = Kron(Kt_star, Kx_star);
-
     kstar = GetMatRow(kstar, idx_global);
+
     Kss = Kt_ss * Kx_star_star;
 
 
@@ -363,6 +361,7 @@ void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd
     sigma_star = sqrt(Css(0, 0) + Css(1, 1) - 2 * Css(0, 1) + pow(sigma, 2));
     val = ( mustar(0) - mustar(1) ) / sigma_star;
     p   = normcdf(val);
+
 }
 
 

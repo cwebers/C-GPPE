@@ -81,7 +81,8 @@ unsigned long BinCoef(int n, int k);
 
 
 //Generating parameters functions
-void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N );
+void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N,
+VectorXd &ftrue, VectorXd &ytrue, MatrixXd& test_pairs, MatrixXd& test_t, MatrixXd &train_t );
 void compute_global_index(VectorXd& idx_global_1, VectorXd& idx_global_2, const TypePair& all_pairs, int N);
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j, int dimrow, int dimcol, VectorXd idx );

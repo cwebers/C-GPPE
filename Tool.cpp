@@ -28,13 +28,13 @@ void SetMatRow(MatrixXd& a, VectorXd& t1,MatrixXd& b)
 	for(int i=0;i<t1.rows();i++)
 	{
 	a.row(t1(i))=b.row(i);
-	dsp("setloop");
 	}
-	dsp("setmarowend");
 }
+
+
 TypePair Gettrain_pairs(TypePair all_pairs)
 {
-	TypePair train_pairs(all_pairs.rows()-1);
+	TypePair train_pairs(all_pairs.rows());
 	MatrixXd pairs;
 	VectorXd idx;
 	for(int i=0;i<train_pairs.rows();i++)
@@ -105,7 +105,8 @@ unsigned long fact(int num)
         return num * fact(num - 1);
 }
 
-void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N )
+void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N,
+VectorXd& ftrue_test, VectorXd &ytrue_test, MatrixXd& test_pairs, MatrixXd & test_t, MatrixXd& train_t )
 {
 	//loading the data
 	double EPSILON=0.1405;
@@ -131,11 +132,7 @@ void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, Ty
 	//VectorXd f=K*rdnum;
 	//F=reshape(f,N,M);
 	idx_pairs=combnk(N);
-	dsp(idx_pairs,"idxPairs");
-	dsp(F,"F");
-	dsp(GetMatRow(F,idx_pairs.col(0)),"matrix1");
 	MatrixXd Y=(GetMatRow(F,idx_pairs.col(0))-GetMatRow(F,idx_pairs.col(1)));
-		dsp("HELLLLLLLLOOOOOOO");
 	for(int i=0;i<Y.rows();i++)
 	{
 		for(int j=0;j<Y.cols();j++)
@@ -165,6 +162,13 @@ void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, Ty
 	Oracle(i)=tmp_pairs;
 	}
 	train_pairs=Gettrain_pairs(Oracle);
+int Mtrain = M-1;
+int test_idx = M-1;
+test_pairs  = Oracle(test_idx);
+train_t = GetMatRow(t,Nfirst(Mtrain));
+test_t = t.row(test_idx);
+ftrue_test = F.col(test_idx);
+ytrue_test = Y.col(test_idx);
 
 }
 
@@ -260,14 +264,11 @@ MatrixXd GetData(const string& myfile)
 
     if(file)
     {
-        dsp(dim_col,"dim_col");
-	    dsp(file.tellg(),"curseur");
 		for(int i=0;i<dim_line;i++)
 		{
 			for (int j=0;j<dim_col;j++)
 			{
 				file>>a(i,j);
-				dsp(a(i,j),"a(i,j)");
 			}
 		}
     }
