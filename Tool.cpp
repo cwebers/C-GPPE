@@ -12,6 +12,65 @@
 // under the License.
 #include "Tool.h"
 
+void dspair(TypePair a, string txt)
+{
+	cout<<txt<<endl;
+	for(int i=0;i<a.rows();i++)
+	{
+		txt="Preférences de lutilisateur num "+i;
+		dsp(a(i),txt);
+	}
+}
+
+
+void SetMatRow(MatrixXd& a, VectorXd& t1,MatrixXd& b)
+{
+	for(int i=0;i<t1.rows();i++)
+	{
+	a.row(t1(i))=b.row(i);
+	dsp("setloop");
+	}
+	dsp("setmarowend");
+}
+TypePair Gettrain_pairs(TypePair all_pairs)
+{
+	TypePair train_pairs(all_pairs.rows()-1);
+	MatrixXd pairs;
+	VectorXd idx;
+	for(int i=0;i<train_pairs.rows();i++)
+	{
+		pairs=all_pairs(i);
+		idx=randperm(pairs.rows());
+		train_pairs(i)=GetMatRow(pairs,idx);
+	}
+
+	return train_pairs;
+}
+
+
+VectorXd randperm(int n)
+{
+	VectorXd idx(n);
+	Vectbool used(n);
+	int num=0;
+	used.fill(false);
+	for(int i=0;i<n;i++)
+	{
+		srand(time(NULL));
+		num=rand() % n;
+		while (used(num))
+		{
+			num=rand() % n;
+		}
+		idx(i)=num;
+		used(num)=true;
+	
+	}
+	return idx;
+	
+}
+
+
 
 MatrixXd combnk(int n)
 {
@@ -46,9 +105,10 @@ unsigned long fact(int num)
         return num * fact(num - 1);
 }
 
-void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle,MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N )
+void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N )
 {
 	//loading the data
+	double EPSILON=0.1405;
 	t=GetData("/Users/christopheroustel/Desktop/C-GPPE/t.txt");
 	x=GetData("/Users/christopheroustel/Desktop/C-GPPE/x.txt");
 	M=t.rows();
@@ -62,7 +122,6 @@ void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle,Mat
 	MatrixXd Kx=covx->ComputeGrandMatrix(x);
 	MatrixXd K=Kron(Kt,Kx);
 	F=GetData("/Users/christopheroustel/Desktop/C-GPPE/F.txt");
-	
 	//other way to get F with random numbers
 	//LLT<MatrixXd> Kllt;
 	//Kllt.compute(K);
@@ -71,9 +130,41 @@ void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle,Mat
 	//rdnum.setRandom();
 	//VectorXd f=K*rdnum;
 	//F=reshape(f,N,M);
-	idx_pairs=combnk(n);
+	idx_pairs=combnk(N);
+	dsp(idx_pairs,"idxPairs");
+	dsp(F,"F");
+	dsp(GetMatRow(F,idx_pairs.col(0)),"matrix1");
+	MatrixXd Y=(GetMatRow(F,idx_pairs.col(0))-GetMatRow(F,idx_pairs.col(1)));
+		dsp("HELLLLLLLLOOOOOOO");
+	for(int i=0;i<Y.rows();i++)
+	{
+		for(int j=0;j<Y.cols();j++)
+		{
+			if(Y(i,j)>EPSILON)
+				Y(i,j)=1;
+			else
+				Y(i,j)=0;
+		}
+	}
 	
-	
+	//generating the preferences pairs
+	Oracle=TypePair(M);
+	MatrixXd tmp_pairs;
+	VectorXd idx_0;
+	MatrixXd inter;
+
+	for(int i=0;i<M;i++)
+	{
+		tmp_pairs=idx_pairs;
+		idx_0=find(Y.col(i),0);
+		inter=GetMatRow(idx_pairs,idx_0);
+
+		fliplr(inter);
+		SetMatRow(tmp_pairs,idx_0,inter);
+		//tmp_pairs.
+	Oracle(i)=tmp_pairs;
+	}
+	train_pairs=Gettrain_pairs(Oracle);
 
 }
 
@@ -144,14 +235,10 @@ int GetDatacol(const string& myfile)
         getline(file, line);
         int position=file.tellg();
         position--;
-        dsp(file.tellg(),"curseur");
         file.seekg(0, ios::beg);//we are placing the cursor in the first line
-        dsp(file.tellg(),"curseur");
         while(file.tellg()!=position)
         {
         	file>>num;
-        	dsp(file.tellg(),"curseur");
-        	dsp(num,"nombres de la 1ere ligne");
         	dim_col++;
         }
     }

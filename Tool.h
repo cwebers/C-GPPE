@@ -25,6 +25,10 @@ typedef Matrix<Matrix<double, Dynamic, Dynamic>, Dynamic, 1> VecMat;
 //typedef for the vector type in dlib
 typedef matrix<double, 0, 1> column_vector;
 
+//typedef of a vector containing boolean
+typedef Matrix<bool, Dynamic, 1> Vectbool;
+
+
 
 //no classed yet
 MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx);
@@ -44,6 +48,7 @@ void Add(VectorXd& a, double val);
 //VectorXd find(const VectorXd& a, const VectorXd& b);
 MatrixXd GetMat(MatrixXd mat, VectorXd t1, VectorXd t2);
 MatrixXd GetMatRow(MatrixXd mat, VectorXd t1);
+void SetMatRow(MatrixXd& a, VectorXd& t1,MatrixXd &b);
 VectorXd GetVec(VectorXd vec, VectorXd t1);
 MatrixXd SetMatGenIdx(MatrixXd mat, VectorXd t1, VectorXd t2);
 VectorXd GetMatGenIdx(MatrixXd mat, VectorXd t1);
@@ -76,7 +81,7 @@ unsigned long BinCoef(int n, int k);
 
 
 //Generating parameters functions
-void Generate(MatrixXd& idx_pairs, MatrixXd & t,MatrixXd& x,TypePair & Oracle,MatrixXd & F, Covfunc *covx, Covfunc *covt );
+void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle, TypePair & train_pairs, MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N );
 void compute_global_index(VectorXd& idx_global_1, VectorXd& idx_global_2, const TypePair& all_pairs, int N);
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j, int dimrow, int dimcol, VectorXd idx );
@@ -86,11 +91,15 @@ VectorXd Nfirst(int N);
 MatrixXd reshape(VectorXd f, int a, int b);
 MatrixXd MatAdd(MatrixXd mat, MatrixXd ln);
 MatrixXd combnk(int n);
+VectorXd randperm(int n);
+
+
 //Debugging functions
 
 void dsp(string s);
 void dsp(MatrixXd a, string s);
 void dsp(double a, string s);
+void dspair(TypePair a, string txt);
 
 
 

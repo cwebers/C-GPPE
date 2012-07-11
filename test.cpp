@@ -14,9 +14,38 @@
 
 #include "CLearner.h"
 
+int testgenerate()
+{
+
+	int N,M;
+	TypePair train_pairs, Oracle;
+	double sigma=0.1;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs(1, 2), test_t(1, 2), t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	CGppe g=CGppe(new CovSEard(),new CovSEard());
+
+ 	
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N );
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+	dsp(idx_pairs,"idxpairs");
+	dspair(train_pairs,"train_pairs");
+	
+	
+	
+	    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
+                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+	return 0;
+}
+
+
+
 int testaddrows()
 {
-	dsp(combnk(10),"fact");
+	dsp(randperm(20),"res");
 	return 0;
 }
 
@@ -1030,5 +1059,6 @@ int main()
     //testinput();
     //testelicit();
    //testreshape();
-   testaddrows();
+   //testaddrows();
+    testgenerate();
 }
