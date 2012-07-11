@@ -12,7 +12,22 @@
 // under the License.
 #ifndef __Covfunc_H__
 #define __Covfunc_H__
-#include "Tool.h"
+#include <Eigen/Dense>
+#include "dlib/optimization.h"
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+using namespace std;
+using namespace dlib;
+using Eigen::VectorXd;
+using Eigen::MatrixXd;
+using Eigen::Dynamic;
+using Eigen::Matrix;
+#include <iostream>
+#include <time.h>
+using Eigen::LLT;
 
 class Covfunc
 {

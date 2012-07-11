@@ -16,13 +16,7 @@
 
 int testaddrows()
 {
-	MatrixXd z(3,3), ln(1,3);
-	z<<1,2,47,
-		3,4,18,
-		5,6,19;
-		
-	ln<<2,3,777;
-	dsp(MatAdd(z,ln),"res");
+	dsp(combnk(10),"fact");
 	return 0;
 }
 
@@ -1034,7 +1028,7 @@ int main()
     //testgradcov();
     //testprediction();
     //testinput();
-    testelicit();
+    //testelicit();
    //testreshape();
-   //testaddrows();
+   testaddrows();
 }

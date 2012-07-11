@@ -187,7 +187,7 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
 }
 
 void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, TypePair & train_pairs
-                   , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle , MatrixXd F)
+                   , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle , MatrixXd& F)
 {
     int N = x.rows();
     int Mtrain = train_t.rows();

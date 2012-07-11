@@ -12,25 +12,7 @@
 // under the License.
 #ifndef __Tool_H__
 #define __Tool_H__
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include "dlib/optimization.h"
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <iostream>
-#include <fstream>
-using namespace std;
-using namespace dlib;
-using Eigen::VectorXd;
-using Eigen::MatrixXd;
-using Eigen::SparseMatrix;
-using Eigen::Dynamic;
-using Eigen::Matrix;
-#include <iostream>
-#include <cmath>
-#include <time.h>
-using Eigen::LLT;
+#include "Covfunc.h"
 
 
 
@@ -88,11 +70,13 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, int ind_t, int ind_x, doubl
 VectorXd get_cum2(VectorXd idx, VectorXd val, int n);
 void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma, const TypePair& all_pairs, int M, int N);
 VectorXd get_dlogp_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, double sigma, const TypePair& all_pairs, int M, int N);
+unsigned long fact(int num);
+unsigned long BinCoef(int n, int k);
 
 
 
 //Generating parameters functions
-
+void Generate(MatrixXd& idx_pairs, MatrixXd & t,MatrixXd& x,TypePair & Oracle,MatrixXd & F, Covfunc *covx, Covfunc *covt );
 void compute_global_index(VectorXd& idx_global_1, VectorXd& idx_global_2, const TypePair& all_pairs, int N);
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c);
 void ind2sub(VectorXd& ind_i, VectorXd& ind_j, int dimrow, int dimcol, VectorXd idx );
@@ -101,7 +85,7 @@ VectorXd ind2global(VectorXd a, VectorXd b, int N);
 VectorXd Nfirst(int N);
 MatrixXd reshape(VectorXd f, int a, int b);
 MatrixXd MatAdd(MatrixXd mat, MatrixXd ln);
-
+MatrixXd combnk(int n);
 //Debugging functions
 
 void dsp(string s);

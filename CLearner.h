@@ -13,14 +13,12 @@
 #ifndef __Learn_H__
 #define __Learn_H__
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <iostream>
 #include <string>
 #include "CGppe.h"
 using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
-using Eigen::SparseMatrix;
 
 class CLearner
 {

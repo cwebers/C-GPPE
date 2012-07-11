@@ -12,15 +12,7 @@
 // under the License.
 #ifndef __CGppe_H__
 #define __CGppe_H__
-#include <Eigen/Dense>
-#include <Eigen/Sparse>
-#include <iostream>
-#include <string>
-#include "Covfunc.h"
-using namespace std;
-using Eigen::VectorXd;
-using Eigen::MatrixXd;
-using Eigen::SparseMatrix;
+#include "Tool.h"
 
 
 class CGppe
@@ -48,7 +40,7 @@ public :
 
 
     void Elicit(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, TypePair & train_pairs
-                , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const TypePair & Oracle, MatrixXd F);
+                , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const TypePair & Oracle, MatrixXd& F);
 
     void Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& theta_t, double& sigma, const MatrixXd& train_t, const MatrixXd &x, const TypePair & train_pairs,
                                    const VectorXd & idx_global, const VectorXd& idx_global_1, const VectorXd& idx_global_2,

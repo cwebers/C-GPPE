@@ -13,23 +13,80 @@
 #include "Tool.h"
 
 
-
-MatrixXd MatAdd(MatrixXd mat, MatrixXd ln)
+MatrixXd combnk(int n)
 {
-	MatrixXd res(mat.rows()+1,mat.cols());
-	for(int i=0;i<mat.rows();i++)
+	MatrixXd idx_pairs;
+	MatrixXd ln(1,2);
+	int z=1;
+	for(int i=0;i<n;i++)
 	{
-		for(int j=0;j<mat.cols();j++)
+		for(int j=z;j<n;j++)
 		{
-			res(i,j)=mat(i,j);	
+			ln(0,0)=i;
+			ln(0,1)=j;
+			idx_pairs=MatAdd(idx_pairs,ln);
 		}
+		z++;
 	}
+	return idx_pairs;
+}
+
+
+unsigned long BinCoef(int n, int k)
+{
+	return fact(n)/(fact(k)*fact(n-k));
+}
+
+
+unsigned long fact(int num)
+{
+    if (num == 0)
+        return 1;
+    else
+        return num * fact(num - 1);
+}
+
+void Generate(MatrixXd &idx_pairs,MatrixXd & t,MatrixXd& x,TypePair & Oracle,MatrixXd & F, Covfunc *covx, Covfunc *covt, VectorXd &theta_t, VectorXd& theta_x, int &M, int &N )
+{
+	//loading the data
+	t=GetData("/Users/christopheroustel/Desktop/C-GPPE/t.txt");
+	x=GetData("/Users/christopheroustel/Desktop/C-GPPE/x.txt");
+	M=t.rows();
+	N=x.rows();
+	int n=M*N;
+	theta_t=VectorXd::Zero(t.cols()+1);
+	theta_x=VectorXd::Zero(x.cols()+1);
+	covt->SetTheta(theta_t);
+	covx->SetTheta(theta_x);
+	MatrixXd Kt=covt->ComputeGrandMatrix(t);
+	MatrixXd Kx=covx->ComputeGrandMatrix(x);
+	MatrixXd K=Kron(Kt,Kx);
+	F=GetData("/Users/christopheroustel/Desktop/C-GPPE/F.txt");
+	
+	//other way to get F with random numbers
+	//LLT<MatrixXd> Kllt;
+	//Kllt.compute(K);
+	//K=Kllt.matrixL();
+	//VectorXd rdnum(n);
+	//rdnum.setRandom();
+	//VectorXd f=K*rdnum;
+	//F=reshape(f,N,M);
+	idx_pairs=combnk(n);
+	
+	
+
+}
+
+MatrixXd MatAdd(MatrixXd  mat, MatrixXd ln)
+{
+	//resizing the matrix without erazing the previous data
+	mat.conservativeResize(mat.rows()+1,ln.cols());
 	//Adding the new line
-	for(int z=0;z<mat.cols();z++)
+	for(int z=0;z<ln.cols();z++)
 	{
-		res(mat.rows(),z)=ln(0,z);
+		mat(mat.rows()-1,z)=ln(0,z);
 	}
-	return res;
+	return mat;
 }
 
 
