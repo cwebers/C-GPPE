@@ -60,4 +60,61 @@ private :
 
 
 };
+
+
+// Wrapper for negative log likelihood
+class CNLL_Function
+{
+    /*
+This object is an example of what is known as a "function object" in C++.
+It is simply an object with an overloaded operator(). This means it can
+be used in a way that is similar to a normal C function. The interesting
+thing about this sort of function is that it can have state.
+*/
+public:
+    
+    CNLL_Function ( const CLearner & learner) : _learner(learner)
+    {
+    }
+    
+    double operator() ( const column_vector & arg) const
+    {
+        // return the mean squared error between the target vector and the input vector
+        // return _learner(arg);
+        return ((CLearner)_learner).negative_marginal_log_likelihood(arg);
+    }
+    
+private:
+    CLearner _learner;
+};
+
+
+
+
+
+// Wrapper for grad negative log likelihood
+class CGradNLL_Function
+{
+    /*
+This object is an example of what is known as a "function object" in C++.
+It is simply an object with an overloaded operator(). This means it can
+be used in a way that is similar to a normal C function. The interesting
+thing about this sort of function is that it can have state.
+*/
+public:
+    
+    CGradNLL_Function ( const CLearner & learner) :_learner(learner)
+    {
+    }
+    
+    column_vector operator() ( const column_vector & arg) const
+    {
+        // return the mean squared error between the target vector and the input vector
+        // return _learner(arg);
+       return ((CLearner)_learner).gradient_negative_marginal_loglikelihood(arg);
+    }
+    
+private:
+    CLearner _learner;
+};
 #endif

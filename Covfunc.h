@@ -27,6 +27,7 @@ using Eigen::Dynamic;
 using Eigen::Matrix;
 #include <iostream>
 #include <time.h>
+#include <sstream>
 using Eigen::LLT;
 
 class Covfunc

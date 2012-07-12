@@ -43,31 +43,6 @@ CLearner::~CLearner()
 }
 
 
-//const double CLearner::negative_marginal_log_likelihood(const column_vector & dltheta)
-//{
-//    VectorXd theta = DlibtoEigen(dltheta);
-//    VectorXd theta_x, theta_t;
-//    double sigma;
-//    GetTheta(theta_x, theta_t, sigma, theta);
-//    covt->SetTheta(theta_t);
-//    covx->SetTheta(theta_x);
-//    CGppe g = CGppe(covt, covx);
-//    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
-//                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-//
-//    double cond_loglike = g.log_likelihood(sigma, train_pairs, idx_global_1, idx_global_2, M, N);
-//    VectorXd fvis = GetVec(g.Getf(), idx_global);
-//    MatrixXd L = g.Getllt().matrixU();
-//    double margl = -0.5 * (-log(g.GetKinv().determinant()) + 2 * (log(g.GetL().diagonal().array()).sum()))
-//                   - 0.5 * fvis.transpose() * g.GetKinv() * fvis + cond_loglike;
-//
-//    cout << "-margl :" << -margl << endl;
-//
-//    return -margl;
-//
-//
-//}
-
 // Calculate function at point
 const double CLearner::negative_marginal_log_likelihood(const column_vector & point)
 {

@@ -242,7 +242,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
         is_selected(query_idx) = true;
 
         new_pair = make_query_toydata(Oracle, query_idx, test_user_idx);
-
+		dsp(train_pairs(M-1),"pref user tested");
         //adding the new pair
         train_pairs(M-1)=MatAdd(train_pairs(M-1),new_pair);
         compute_global_index(idx_global_1, idx_global_2, train_pairs, N);

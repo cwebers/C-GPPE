@@ -38,6 +38,7 @@ void loss_query_toydata(double &loss, const MatrixXd& F, bool& stop, int test_us
 int GetDataline(const string& myfile);
 int GetDatacol(const string& myfile);
 MatrixXd GetData(const string& myfile);
+TypePair InputPair(const string& myfile);
 
 //convenient access functions
 

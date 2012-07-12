@@ -21,6 +21,35 @@ void dspair(TypePair a, string txt)
 		dsp(a(i),txt);
 	}
 }
+TypePair InputPair(const string& myfile)
+{
+	int dimpair=0;
+	//creating an output flux
+	ostringstream oss;
+	string info=myfile+"/informations.txt";
+	ifstream file(info.c_str());
+    if(file)
+    {
+		file>>dimpair;
+    }
+    else
+    {
+        cout << "Couldn't open the file" << endl;
+    }
+    TypePair res(dimpair);
+    for(int i=0;i<dimpair;i++)
+    {
+    // writing the current number into the flux
+    oss << i;
+    // Get back the current number into a string 
+    info = myfile+"/pair"+oss.str()+".txt";
+    cout<<info<<endl;
+    res(i)=GetData(info);
+    res(i)=res(i).array()-1;
+    oss.str("");
+    }
+    return res;
+}
 
 
 void SetMatRow(MatrixXd& a, VectorXd& t1,MatrixXd& b)
@@ -37,7 +66,7 @@ TypePair Gettrain_pairs(TypePair all_pairs)
 	TypePair train_pairs(all_pairs.rows());
 	MatrixXd pairs;
 	VectorXd idx;
-	for(int i=0;i<train_pairs.rows();i++)
+	for(int i=0;i<train_pairs.rows()-1;i++)
 	{
 		pairs=all_pairs(i);
 		idx=randperm(pairs.rows());
@@ -149,19 +178,25 @@ VectorXd& ftrue_test, VectorXd &ytrue_test, MatrixXd& test_pairs, MatrixXd & tes
 	MatrixXd tmp_pairs;
 	VectorXd idx_0;
 	MatrixXd inter;
+ 	//Myself
+	//for(int i=0;i<M;i++)
+	//{
+	//	tmp_pairs=idx_pairs;
+	//	idx_0=find(Y.col(i),0);
+	//	inter=GetMatRow(idx_pairs,idx_0);
 
-	for(int i=0;i<M;i++)
-	{
-		tmp_pairs=idx_pairs;
-		idx_0=find(Y.col(i),0);
-		inter=GetMatRow(idx_pairs,idx_0);
+	//	fliplr(inter);
+	//	SetMatRow(tmp_pairs,idx_0,inter);
+	//Oracle(i)=tmp_pairs;
+	//}
+		//with matlab's data
+	Oracle=InputPair("/Users/christopheroustel/Desktop/C-GPPE/all_pairs");
+	//Generating train_pairs myself
+	//train_pairs=Gettrain_pairs(Oracle);
+	//with matlab's data
+	train_pairs=InputPair("/Users/christopheroustel/Desktop/C-GPPE/train_pairs");
+	train_pairs.conservativeResize(train_pairs.rows()+1);
 
-		fliplr(inter);
-		SetMatRow(tmp_pairs,idx_0,inter);
-		//tmp_pairs.
-	Oracle(i)=tmp_pairs;
-	}
-	train_pairs=Gettrain_pairs(Oracle);
 int Mtrain = M-1;
 int test_idx = M-1;
 test_pairs  = Oracle(test_idx);
@@ -256,14 +291,16 @@ int GetDatacol(const string& myfile)
 
 MatrixXd GetData(const string& myfile)
 {
-	int dim_line=GetDataline(myfile);
-	int dim_col=GetDatacol(myfile);
-	
-	MatrixXd a=MatrixXd::Zero(dim_line,dim_col);//now we can create the Matrix
+	int dim_line;
+	int dim_col;
+	MatrixXd a;
 	ifstream file(myfile.c_str());
 
     if(file)
     {
+    	file>>dim_line;
+    	file>>dim_col;
+		a=MatrixXd::Zero(dim_line,dim_col);//now we can create the Matrix
 		for(int i=0;i<dim_line;i++)
 		{
 			for (int j=0;j<dim_col;j++)
@@ -466,7 +503,6 @@ void loss_query_toydata(double& loss, const MatrixXd& F, bool& stop, int test_us
     double best_val = ftest.maxCoeff();
     double pred_val = ftest(best_item_idx);
     loss = best_val - pred_val;
-
     if (pred_val == best_val)
         stop = true;
     else
@@ -477,7 +513,6 @@ void loss_query_toydata(double& loss, const MatrixXd& F, bool& stop, int test_us
 
 MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx)
 {
-	dsp(test_idx,"idx");
     return Oracle(test_idx).row(query_idx);
 }
 

@@ -15,6 +15,87 @@
 #include "CLearner.h"
 
 
+int teststring()
+{
+	TypePair all_pairs;
+	all_pairs=InputPair("/Users/christopheroustel/Desktop/C-GPPE/all_pairs");
+	dspair(all_pairs,"all_pairs");
+	dsp(all_pairs.rows(),"avant");
+	all_pairs.conservativeResize(all_pairs.rows()+1);
+		dsp(all_pairs.rows(),"après");
+	dspair(all_pairs,"all_pairs");
+
+	return 0;
+}
+
+int Optimisation_without_derivatives()
+{
+	//for measuring running time
+    clock_t start, end;
+    double elapsed;
+    start = clock();
+	//declaring the data
+	int N,M;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double logsigma=-2.3025;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs, test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd theta;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
+ 	CGppe g=CGppe(new CovSEard(),new CovSEard());
+
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+     int test_user_idx=M-1;
+    theta=concatTheta(theta_t, theta_x,logsigma);
+    
+    
+    
+   
+   
+   
+   
+   
+   // VectorXd theta_first = theta;
+    VectorXd theta_first = VectorXd::Ones(theta.rows());
+    theta_first(theta.rows()-1)=logsigma;
+
+    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+
+    // Now lets try doing it again with a different starting point and the version
+    // of find_min() that doesn't require you to supply a derivative function.
+    // This version will compute a numerical approximation of the derivative since
+    // we didn't supply one to it.
+    column_vector starting_point;
+    starting_point = EigentoDlib(theta_first);
+
+// find_min_using_approximate_derivatives(bfgs_search_strategy(),
+// objective_delta_stop_strategy(1e-7),
+// learner,
+// starting_point, INT_MIN);
+ 
+    find_min_using_approximate_derivatives(bfgs_search_strategy(),
+                                           objective_delta_stop_strategy(1e-7),
+                                           CNLL_Function(learner),
+                                           starting_point, -10);
+    
+    // Again the correct minimum point is found and stored in starting_point
+    cout << starting_point << endl;
+
+    return 0;
+	return 0;
+}
 
 int Prediction()
 {
@@ -51,6 +132,11 @@ int Prediction()
                                    idx_global, idx_global_1, idx_global_2,
                                    ind_t, ind_x, test_t, idx_pairs, ftrue, ytrue);
 	
+	
+		    end = clock();
+
+    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    cout << "Elapsed Time :" << elapsed << endl;
 	return 0;
 }
 int Elicitation()
@@ -82,7 +168,6 @@ int Elicitation()
     ind2sub(ind_x, ind_t, N, M, idx_global);
      int test_user_idx=M-1;
 
-	
 	
 	g.Elicit(theta_x, theta_t, sigma,  train_t, x, train_pairs, test_t, 
 		test_user_idx, idx_pairs, Maxiter,  Oracle, F);
@@ -303,128 +388,6 @@ int testgradcov()
 	return 0;
 }
 
-
-//int testopt2()
-//{
-// //generating the data naively
-//
-// int M = 3;
-// int N = 2;
-// double sigma = 0.1;
-//
-// const int user_dimension = 2;
-// const int item_dimension = 3;
-// const int noise_dimension = 1;
-//
-// const int number_of_parameters = (user_dimension+1) + (item_dimension+1) + noise_dimension;
-//
-// CGppe g = CGppe(new CovSEard(), new CovSEard());
-// TypePair all_pairs(2);
-// VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
-// MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
-// VectorXd theta_x = VectorXd::Ones(4);
-// VectorXd theta_t = VectorXd::Ones(3);
-// VectorXd theta = VectorXd::Ones(8);
-// theta(7) = -2.3;
-// VectorXd theta_first = theta;
-//
-// t(0, 0) = -0.7258;
-// t(0, 1) = -1.9623;
-// t(1, 0) = -0.3078;
-// t(1, 1) = -0.9332;
-// x(0, 0) = 2.4582;
-// x(0, 1) = -4.0911;
-// x(0, 2) = 1.0004;
-// x(1, 0) = 6.1426;
-// x(1, 1) = -6.3481;
-// x(1, 2) = -4.7591;
-// pairs << 0, 1;
-// tstar << 0.2501, 1.4168;
-// all_pairs(0) = pairs;
-// all_pairs(1) = pairs;
-//
-//
-// idx_global_1 << 0, 2;
-// idx_global_2 << 1, 3;
-// idx_global << 0, 1, 2, 3;
-// ind_t << 0, 0, 1, 1;
-// ind_x << 0, 1, 0, 1;
-// CLearner learner = CLearner(new CovSEard(), new CovSEard(),
-// t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
-//
-//
-// column_vector starting_point;
-//
-// // Finally, lets try the BOBYQA algorithm. This is a technique specially
-// // designed to minimize a function in the absence of derivative information.
-// // Generally speaking, it is the method of choice if derivatives are not available.
-// starting_point = EigentoDlib(theta_first);
-//
-// find_min_bobyqa(learner,
-// starting_point,
-// 15, // number of interpolation points
-// uniform_matrix<double>(number_of_parameters, 1, -1e100), // lower bound constraint
-// uniform_matrix<double>(number_of_parameters, 1, 1e100), // upper bound constraint
-// 10, // initial trust region radius
-// 1e-6, // stopping trust region radius
-// 1000000 // max number of objective function evaluations
-// );
-// cout << starting_point << endl;
-// return 0;
-//}
-
-// Wrapper for negative log likelihood
-class CNLL_Function
-{
-    /*
-This object is an example of what is known as a "function object" in C++.
-It is simply an object with an overloaded operator(). This means it can
-be used in a way that is similar to a normal C function. The interesting
-thing about this sort of function is that it can have state.
-*/
-public:
-    
-    CNLL_Function ( const CLearner & learner) : _learner(learner)
-    {
-    }
-    
-    double operator() ( const column_vector & arg) const
-    {
-        // return the mean squared error between the target vector and the input vector
-        // return _learner(arg);
-        return ((CLearner)_learner).negative_marginal_log_likelihood(arg);
-    }
-    
-private:
-    CLearner _learner;
-};
-
-
-// Wrapper for grad negative log likelihood
-class CGradNLL_Function
-{
-    /*
-This object is an example of what is known as a "function object" in C++.
-It is simply an object with an overloaded operator(). This means it can
-be used in a way that is similar to a normal C function. The interesting
-thing about this sort of function is that it can have state.
-*/
-public:
-    
-    CGradNLL_Function ( const CLearner & learner) :_learner(learner)
-    {
-    }
-    
-    column_vector operator() ( const column_vector & arg) const
-    {
-        // return the mean squared error between the target vector and the input vector
-        // return _learner(arg);
-       return ((CLearner)_learner).gradient_negative_marginal_loglikelihood(arg);
-    }
-    
-private:
-    CLearner _learner;
-};
 
 
 int testopt()
@@ -1084,7 +1047,6 @@ int main()
     //testgradnl();
     //testcovderiv();
    //	testopt();
-    // testopt2();
     //testgradcov();
     //testprediction();
     //testinput();
@@ -1094,4 +1056,7 @@ int main()
    // testgenerate();
     Elicitation();
     //Prediction();
+	//Optimisation_without_derivatives();
+	//teststring();
+
 }
