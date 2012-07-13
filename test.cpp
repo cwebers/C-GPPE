@@ -14,6 +14,49 @@
 
 #include "CLearner.h"
 
+int Posterior()
+{
+	//for measuring running time
+    clock_t start, end;
+    double elapsed;
+    start = clock();
+	//declaring the data
+	int N,M;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double sigma=0.1;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs, test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd theta;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
+ 	CGppe g=CGppe(new CovSEard(),new CovSEard());
+
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+    g.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
+                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+    dsp(g.GetW(), "W");
+    dsp(g.GetL(), "L");
+    dsp(g.GetKinv(), "Kinv");
+    dsp(g.Getf(), "f");
+
+
+    end = clock();
+    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    cout << "Elapsed Time :" << elapsed << endl;
+    return 0;
+	return 0;
+}
+
 
 int teststring()
 {
@@ -1061,5 +1104,6 @@ int main()
     //Prediction();
 	//Optimisation_without_derivatives();
 	//teststring();
+	//Posterior();
 
 }

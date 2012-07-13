@@ -103,7 +103,7 @@ VectorXd randperm(int n)
 MatrixXd combnk(int n)
 {
 	MatrixXd idx_pairs;
-	MatrixXd ln(1,2);
+	MatrixXd ln(1,2), inter;
 	int z=1;
 	for(int i=0;i<n;i++)
 	{
@@ -159,7 +159,9 @@ VectorXd& ftrue_test, VectorXd &ytrue_test, MatrixXd& test_pairs, MatrixXd & tes
 	//rdnum.setRandom();
 	//VectorXd f=K*rdnum;
 	//F=reshape(f,N,M);
-	idx_pairs=combnk(N);
+	//idx_pairs=combnk(N);
+	idx_pairs=GetData("/Users/christopheroustel/Desktop/C-GPPE/idx_pairs.txt");
+	idx_pairs=idx_pairs.array()-1;
 	MatrixXd Y=(GetMatRow(F,idx_pairs.col(0))-GetMatRow(F,idx_pairs.col(1)));
 	for(int i=0;i<Y.rows();i++)
 	{
@@ -194,7 +196,6 @@ VectorXd& ftrue_test, VectorXd &ytrue_test, MatrixXd& test_pairs, MatrixXd & tes
 	//train_pairs=Gettrain_pairs(Oracle);
 	//with matlab's data
 	train_pairs=InputPair("/Users/christopheroustel/Desktop/C-GPPE/train_pairs");
-	train_pairs.conservativeResize(train_pairs.rows()+1);
 
 int Mtrain = M-1;
 int test_idx = M-1;

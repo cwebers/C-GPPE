@@ -106,16 +106,12 @@ double CGppe::get_fbest(int N)
 double CGppe::maximum_expected_improvement(const VectorXd & theta_t, const VectorXd& theta_x, const double& sigma,
         const MatrixXd& t, const MatrixXd & x, const VectorXd& idx_global, const VectorXd& ind_t, const VectorXd& ind_x, MatrixXd tstar, int N, double fbest)
 {
-    VectorXd idx_xstar(N);
-    for (int i = 0;i < N;i++)
-    {
-        idx_xstar(i) = i;
-    }
+    VectorXd idx_xstar=Nfirst(N);
     int Kt_ss = 1;
     double  mei;
     MatrixXd Kx_star, Kx_star_star, kstar, Kss, Css;
     MatrixXd Kt_star = covfunc_t->Compute(t, tstar);
-
+	//dsp(GetKinv(),"Kinv");
 
 
     Kx_star = GetMatRow(Kx, idx_xstar.transpose()); //maybe need some transpose?
@@ -141,6 +137,7 @@ double CGppe::maximum_expected_improvement(const VectorXd & theta_t, const Vecto
 
 	el=-1*el;
     mei = el.maxCoeff();
+    //dsp(mei,"mei");
     return mei;
 }
 
@@ -166,7 +163,7 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
     mei_12 = maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
-
+	dsp(mei_12,"mei12");
     //recomputation
     fliplr(test_pair);
 	train_pairs(M-1).bottomRows(1)=test_pair;
@@ -186,6 +183,7 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
 void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, TypePair & train_pairs
                    , const MatrixXd & test_t, int test_user_idx, MatrixXd  idx_pairs, int  Maxiter, const  TypePair& Oracle , MatrixXd& F)
 {
+    train_pairs.conservativeResize(train_pairs.rows()+1);
     int N = x.rows();
     int Mtrain = train_t.rows();
     int M = Mtrain + 1;
@@ -214,12 +212,13 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
                              t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
 
         Predictive_Utility_Distribution(t, test_t, N, idx_global );
-
+		//dsp(mustar,"mustar");
+		//dsp(varstar,"varstar");
         std::ptrdiff_t best_item_idx;
         foo = mustar.maxCoeff(&best_item_idx);
         double fbest = get_fbest(N);
+        //dsp(fbest,"fbest");
         MatrixXd test_pair;
-
         for (int i = 0;i < Npairs;i++)
         {
             if (is_selected(i))
@@ -446,7 +445,7 @@ VectorXd CGppe::deriv_log_likelihood_CGppe_fast(double sigma, const  TypePair& a
     z = (GetVec(f, idx_global_1) - GetVec(f, idx_global_2)) / sigma;
     cdf_val = normcdf(z);
     pdf_val = normpdf(z);
-    val = (1. / sigma) * (pdf_val.array() / cdf_val.array());
+    val = pow(sigma,-1) * (pdf_val.cwiseQuotient(cdf_val));
     return Get_Cumulative_Val(idx_global_1, val, n) - Get_Cumulative_Val(idx_global_2, val, n);
 }
 

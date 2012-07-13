@@ -1,12 +1,11 @@
 CPP	   = g++
 INCL       = -I ../Eigen -I../dlib
-OPTIONS	   =  -fopenmp
-OPTIONS   += -O3
+OPTIONS	   =  -fopenmp -O3
 EXECUTABLE = test
 OBJECTS	   = test.o Covfunc.o CGppe.o Tool.o CLearner.o
 
 ${EXECUTABLE}: ${OBJECTS}
-	${CPP} -o ${EXECUTABLE} ${OBJECTS}
+	${CPP} -lgomp -o ${EXECUTABLE} ${OBJECTS}
 	
 test.o: test.cpp Covfunc.h CGppe.h Tool.h CLearner.o
 	${CPP} ${INCL} ${OPTIONS} -c test.cpp
