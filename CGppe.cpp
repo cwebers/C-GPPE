@@ -236,13 +236,13 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
 
         std::ptrdiff_t query_idx;
         val = evoi.maxCoeff(&query_idx);
+        //dsp(evoi,"evoi");
        // idx_good = find(evoi, val);
         //evoi is a vector, so there isn't any multiple index argument
         //and no need for the Lgood check stuff
         is_selected(query_idx) = true;
-
+		//dsp(query_idx,"queryidx");
         new_pair = make_query_toydata(Oracle, query_idx, test_user_idx);
-		dsp(train_pairs(M-1),"pref user tested");
         //adding the new pair
         train_pairs(M-1)=MatAdd(train_pairs(M-1),new_pair);
         compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
@@ -298,9 +298,10 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
     {
         if (P(i) > 0.5)
             ypred(i) = 1;
+        else
+        	ypred(i)=0;
     }
 
-//fstar=MyNaNMean(Fstar);
     fstar = sum.array() / count.array();
 	dsp(fstar,"fstar");
     cout << endl << endl << "error =  " << (GetDiff(ytrue, ypred)).sum() / ytrue.rows()<<endl;

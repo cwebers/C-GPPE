@@ -67,11 +67,15 @@ int Optimisation_without_derivatives()
    
    
    // VectorXd theta_first = theta;
-    VectorXd theta_first = VectorXd::Ones(theta.rows());
+    VectorXd theta_first = VectorXd::Zero(theta.rows());
     theta_first(theta.rows()-1)=logsigma;
 
     CLearner learner = CLearner(new CovSEard(), new CovSEard(),
                           t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+
+
+
+
 
     // Now lets try doing it again with a different starting point and the version
     // of find_min() that doesn't require you to supply a derivative function.
@@ -79,6 +83,10 @@ int Optimisation_without_derivatives()
     // we didn't supply one to it.
     column_vector starting_point;
     starting_point = EigentoDlib(theta_first);
+
+        cout << "Difference between analytic derivative and numerical approximation of derivative: " 
+              << length(derivative(CNLL_Function(learner))(starting_point) - learner.gradient_negative_marginal_loglikelihood(starting_point)) << endl;
+
 
 // find_min_using_approximate_derivatives(bfgs_search_strategy(),
 // objective_delta_stop_strategy(1e-7),
@@ -224,7 +232,18 @@ int testgenerate()
 
 int testaddrows()
 {
-	dsp(randperm(20),"res");
+	VectorXd theta_t(3), theta_x(4), theta;
+	double sigma;
+	theta_t<<1,2,3;
+	theta_x<<4,5,6,7;
+	sigma=8;
+theta=concatTheta(theta_t,theta_x,sigma);
+dsp(theta,"theta");
+	GetTheta(theta_t,theta_x,sigma ,theta, 2, 3);
+dsp(theta_t,"theta_t");
+dsp(theta_x,"theta_x");
+dsp(sigma,"sigma");
+
 	return 0;
 }
 
@@ -634,28 +653,7 @@ int testmatrixmultiplication()
     return 0;
 }
 
-int testNaNValue()
-{
-    //TypePair mat(1);
-    MatrixXd y;
-    int incr = 0;
-    MatrixXd z = MatrixXd::Zero(5, 2);
-    for (int i = 0;i < z.rows();i++)
-    {
-        for (int j = 0;j < z.cols();j++)
-        {
-            incr++;
-            z(i, j) = incr;
-        }
-    }
-    z(1, 1) = pow(-1, 0.5); //z(1,0)=pow(-1,0.5);
 
-    dsp(z.row(1).mean(), "using eigen");
-    dsp(z, "z");
-    dsp(MyNaNMean(z), "mean of z without the NaN value");
-
-    return 0;
-}
 
 int testpredictive_utility()
 {
@@ -878,30 +876,36 @@ int testvoidfunctions()
 // Test CovSEard
 int testCovSEard()
 {
-    VectorXd t1(2), t2(2), t3(3), t4(3), t5(1);
-    MatrixXd mat(12, 2);
-    for (int z = 0;z < 3;z++)
-    {
-        t4(z) = 1 ;
-    }
-    t5(0) = 12;
+	//declaring the data
+	int N,M;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double sigma=0.1;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs(1, 2), test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
 
-    InitMatrix(mat);
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+     int test_user_idx=M-1;
+     theta_t.fill(0.49782);
+    CovSEard a = CovSEard(theta_t);
 
-    t1(0) = 1;
-    t1(1) = 15;
-    t2(0) = 1;
-    t2(1) = 15;
-    CovSEard a = CovSEard(t4);
-    //CovNoise b=CovNoise(t5);
-//CovSum mafunc=CovSum(new CovSEard,new CovSEard,t4);
-    //CovSEard mafunc=CovSEard();
 
     double k;
     k = 5;
 
 //cout<<mafunc.Evaluate(t1,t2)<<endl;
-    cout << a.ComputeGrandMatrix(mat) << endl;
+    cout << a.ComputeGrandMatrix(train_t) << endl;
 //cout<<mafunc.ComputeGrandMatrix(mat)<<endl;
     return 0;
 }
@@ -1039,7 +1043,6 @@ int main()
     //testpredict_CGppe_laplace_fast();
     //testapproc_CGppe_laplace_fast();
     //testpredictive_utility();
-    //testNaNValue();
     //testmatrixmultiplication();
     //findvalue();
     //testgendata();
