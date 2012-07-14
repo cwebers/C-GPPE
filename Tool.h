@@ -92,6 +92,7 @@ MatrixXd reshape(VectorXd f, int a, int b);
 MatrixXd MatAdd(MatrixXd mat, MatrixXd ln);
 MatrixXd combnk(int n);
 VectorXd randperm(int n);
+VectorXd concatsort(const VectorXd &a,const VectorXd& b);
 
 
 //Debugging functions

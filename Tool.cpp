@@ -12,6 +12,17 @@
 // under the License.
 #include "Tool.h"
 
+
+
+VectorXd concatsort(const VectorXd& a,const VectorXd& b)
+{
+	VectorXd c(a.rows()+b.rows());
+	c<<a,b;
+	
+	std::sort(c.col(0).data(), c.col(0).data() + c.rows());
+	return c;	
+}
+
 void dspair(TypePair a, string txt)
 {
 	cout<<txt<<endl;
@@ -376,11 +387,11 @@ VectorXd concatmat(const MatrixXd& a )
 {
     VectorXd concat(a.rows()*a.cols());
     int z = 0;
-    for (int i = 0;i < a.rows();i++)
+    for (int j = 0;j < a.cols();j++)
     {
-        for (int j = 0;j < a.cols();j++)
+        for (int i = 0;i < a.rows();i++)
         {
-            concat(z) = a(j, i);
+            concat(z) = a(i, j);
             z++;
         }
     }
@@ -520,17 +531,17 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, int ind_t, int ind_x, doubl
 {
     int n = M * N;
     MatrixXd dWdf = MatrixXd::Zero(n, n);
-    VectorXd idx_1, idx_2, idx_select, idx_global_1, idx_global_2, ind, z, pdf_val, cdf_val, val, coeff, ratio1, ind_trans;
+    VectorXd idx_1, idx_2, idx_select,idx_select_1, idx_select_2, idx_global_1, idx_global_2, ind, z, pdf_val, cdf_val, val, coeff, ratio1, ind_trans;
 
     //We first find the user and the data-point corresponding to this index
     idx_1 = pairs.col(0);
     idx_2 = pairs.col(1);
 
     // We simply match those corresponding to the required f
-    idx_select = find(idx_1, ind_x);
-
-    if (idx_select.rows() == 0)
-        idx_select = find(idx_2, ind_x);
+    idx_select_1 = find(idx_1, ind_x);
+	idx_select_2 = find(idx_2, ind_x);
+	idx_select=concatsort(idx_select_1,idx_select_2);
+		dsp(idx_select,"idx_select");
 
     if (idx_select.rows() == 0)
         return dWdf;

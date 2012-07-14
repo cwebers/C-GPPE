@@ -102,7 +102,7 @@ int Optimisation_without_derivatives()
      int test_user_idx=M-1;
     theta=concatTheta(theta_t, theta_x,logsigma);
     
-    
+    int Mtrain=M-1;
     
    
    
@@ -114,7 +114,7 @@ int Optimisation_without_derivatives()
     theta_first(theta.rows()-1)=logsigma;
 
     CLearner learner = CLearner(new CovSEard(), new CovSEard(),
-                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
+                          train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
 
 
 
@@ -538,42 +538,43 @@ int testcovderiv()
 int testgradnl()
 {
  //generating the data naively
+	//for measuring running time
+    clock_t start, end;
+    double elapsed;
+    start = clock();
+	//declaring the data
+	int N,M,Mtrain;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double logsigma=-2.3026;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs, test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd theta;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
+ 	Mtrain=M-1;
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+    	theta=concatTheta(theta_t, theta_x,logsigma);
+ 	Mtrain=M-1;
 
- int M = 3;
- int N = 2;
- CGppe g = CGppe(new CovSEard(), new CovSEard());
- TypePair all_pairs(2);
- VectorXd idx_global_1(2), idx_global_2(2), idx_global(4), ind_t(4), ind_x(4);
- MatrixXd pairs(1, 2), t(2, 2), x(2, 3), tstar(1, 2);
- VectorXd theta_x = VectorXd::Zero(4);
- VectorXd theta_t = VectorXd::Zero(3);
- VectorXd theta = VectorXd::Zero(8);
- theta(7) = -2.30258509;
- t(0, 0) = -0.7258;
- t(0, 1) = -1.9623;
- t(1, 0) = -0.3078;
- t(1, 1) = -0.9332;
- x(0, 0) = 2.4582;
- x(0, 1) = -4.0911;
- x(0, 2) = 1.0004;
- x(1, 0) = 6.1426;
- x(1, 1) = -6.3481;
- x(1, 2) = -4.7591;
- pairs << 0, 1;
- tstar << 0.2501, 1.4168;
- all_pairs(0) = pairs;
- all_pairs(1) = pairs;
-int Mtrain=M-1;
-
- idx_global_1 << 0, 2;
- idx_global_2 << 1, 3;
- idx_global << 0, 1, 2, 3;
- ind_t << 0, 0, 1, 1;
- ind_x << 0, 1, 0, 1;
  CLearner learner = CLearner(new CovSEard(), new CovSEard(),
-	t, x, all_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
- //dsp(learner.gradient_negative_marginal_loglikelihood(EigentoDlib(theta)), "grad");
- return 0;
+	train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
+dsp(DlibtoEigen(learner.gradient_negative_marginal_loglikelihood(EigentoDlib(theta))),"gradtheta");
+ 	    end = clock();
+
+
+    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    cout << "Elapsed Time :" << elapsed << endl;
+	return 0;
 }
 
 
@@ -1090,7 +1091,7 @@ int main()
     //findvalue();
     //testgendata();
     //testnl();
-    //testgradnl();
+   testgradnl();
     //testcovderiv();
    //	testopt();
     //testgradcov();
@@ -1100,7 +1101,7 @@ int main()
    //testreshape();
    //testaddrows();
    // testgenerate();
-    Elicitation();
+    //Elicitation();
     //Prediction();
 	//Optimisation_without_derivatives();
 	//teststring();
