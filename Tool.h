@@ -44,7 +44,7 @@ TypePair InputPair(const string& myfile);
 
 void fliplr(MatrixXd& a);
 //int find(const MatrixXd& a, double val );
-VectorXd find(const VectorXd a, int b);
+VectorXd find(const VectorXd a, double b);
 void Add(VectorXd& a, double val);
 //VectorXd find(const VectorXd& a, const VectorXd& b);
 MatrixXd GetMat(MatrixXd mat, VectorXd t1, VectorXd t2);

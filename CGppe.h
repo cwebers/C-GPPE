@@ -36,7 +36,7 @@ public :
                                         const MatrixXd& t, const MatrixXd & x, const VectorXd& idx_global, const VectorXd& ind_t, const VectorXd& ind_x, MatrixXd tstar, int N, double fbest);
 
     double expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
-                        const MatrixXd& t, const MatrixXd & x, TypePair train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest);
+                        const MatrixXd& t, const MatrixXd & x, TypePair train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest,double p_12);
 
 
     void Elicit(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma, const MatrixXd& train_t, const MatrixXd &x, TypePair & train_pairs

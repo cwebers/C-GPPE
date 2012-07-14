@@ -142,28 +142,26 @@ double CGppe::maximum_expected_improvement(const VectorXd & theta_t, const Vecto
 }
 
 double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, const double& sigma,
-                          const MatrixXd& t, const MatrixXd & x, TypePair train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest)
+                          const MatrixXd& t, const MatrixXd & x, TypePair train_pairs, VectorXd& idx_global, VectorXd& ind_t, VectorXd& ind_x, MatrixXd test_pair, double fbest, double p_12)
 {
 
     int M = t.rows();
     int N = x.rows();
+    CGppe gnew= CGppe(new CovSEard(),new CovSEard());
     VectorXd idx_global_1, idx_global_2;
     MatrixXd tstar = t.row(M-1);
-    double p_12, p_21, mei_12, mei_21;
-
-    Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, tstar, test_pair);
-    p_12 = p;
-    p_21 = 1 - p_12;
+    double p_21, mei_12, mei_21;
+    p_21 = 1. - p_12;
 	train_pairs(M-1)=MatAdd(train_pairs(M-1),test_pair);
     compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
     unique(idx_global, idx_global_1, idx_global_2);
     ind2sub(ind_x, ind_t, N, M, idx_global);
-
-    Approx_CGppe_Laplace( theta_x, theta_t, sigma,
+    gnew.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
-    mei_12 = maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
-	dsp(mei_12,"mei12");
+    mei_12 = gnew.maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
+
+	//dsp(mei_12,"mei12");
     //recomputation
     fliplr(test_pair);
 	train_pairs(M-1).bottomRows(1)=test_pair;
@@ -172,10 +170,10 @@ double CGppe::expected_voi(const VectorXd & theta_x, const VectorXd& theta_t, co
     ind2sub(ind_x, ind_t, N, M, idx_global);
 
 
-    Approx_CGppe_Laplace( theta_x, theta_t, sigma,
+    gnew.Approx_CGppe_Laplace( theta_x, theta_t, sigma,
                          t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, M, N);
 
-    mei_21 = maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
+    mei_21 = gnew.maximum_expected_improvement(theta_t, theta_x, sigma, t, x, idx_global, ind_t, ind_x, tstar, N, fbest);
 
     return (p_12*mei_12 + p_21*mei_21) ;
 }
@@ -188,6 +186,8 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
     int Mtrain = train_t.rows();
     int M = Mtrain + 1;
     int Npairs = idx_pairs.rows();
+    int Lgood;
+    VectorXd vrand, idx_good;
     //VectorXd is_selected(Npairs);
     Matrix<bool, Dynamic, 1> is_selected(Npairs);
     is_selected.fill(false);
@@ -199,11 +199,11 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
     unique(idx_global, idx_global_1, idx_global_2);
     ind2sub(ind_x, ind_t, N, M, idx_global);
     bool stop = false;
-    double foo, val, idx_good;
+    double foo, val;
     int count = 0;
     MatrixXd new_pair;
     MatrixXd t;
-
+	VectorXd p_12(Npairs);
     t.resize(M, train_t.cols());
     t << train_t, test_t;
     for (int iter = 0;iter <= Maxiter;iter++)
@@ -221,6 +221,12 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
         MatrixXd test_pair;
         for (int i = 0;i < Npairs;i++)
         {
+        	Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, t.row(M-1), idx_pairs.row(i));
+        	p_12(i)=p;
+        }
+        
+        for (int i = 0;i < Npairs;i++)
+        {
             if (is_selected(i))
             {
                 evoi(i) = INT_MIN;
@@ -228,17 +234,23 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
             }
 
             test_pair = idx_pairs.row(i);
-
-            evoi(i) = expected_voi(theta_x, theta_t, sigma, t, x, train_pairs, idx_global, ind_t, ind_x, test_pair, fbest);
-
+			evoi(i) = expected_voi(theta_x, theta_t, sigma, t, x, train_pairs, idx_global, ind_t, ind_x, test_pair, fbest,p_12(i));
         }
+					//dsp(evoi,"evoi");
 
         std::ptrdiff_t query_idx;
         val = evoi.maxCoeff(&query_idx);
-        //dsp(evoi,"evoi");
-       // idx_good = find(evoi, val);
-        //evoi is a vector, so there isn't any multiple index argument
-        //and no need for the Lgood check stuff
+        idx_good = find(evoi, val);
+        //dsp(val,"val");
+         Lgood = idx_good.rows(); 
+         
+    	if ( Lgood > 1) 
+    	{
+        	vrand = randperm(Lgood);
+        	dsp("Solving clashes at random");
+        	query_idx = idx_good(vrand(0));
+        }
+        
         is_selected(query_idx) = true;
 		//dsp(query_idx,"queryidx");
         new_pair = make_query_toydata(Oracle, query_idx, test_user_idx);
@@ -345,7 +357,6 @@ void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd
     MatrixXd Kx_star, Kx_star_star, kstar, Kss, Css;
     MatrixXd Kt_star = covfunc_t->Compute(t, tstar);
 
-
     Kx_star = GetMatRow(Kx, test_pair.transpose()).transpose(); //maybe need some transpose?
 
     Kx_star_star = GetMat(Kx, test_pair.transpose(), test_pair.transpose()); // test to test
@@ -353,7 +364,6 @@ void CGppe::Predict_CGppe_Laplace(double sigma, MatrixXd t, MatrixXd x, VectorXd
     kstar = GetMatRow(kstar, idx_global);
 
     Kss = Kt_ss * Kx_star_star;
-
 
     mustar = kstar.transpose() * Kinv * GetVec(f, idx_global);
     Css    = Kss - kstar.transpose() * W * llt.solve(Kinv * kstar);

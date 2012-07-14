@@ -318,7 +318,7 @@ MatrixXd GetData(const string& myfile)
 }
 
 
-VectorXd find(const VectorXd a, int b)
+VectorXd find(const VectorXd a, double b)
 {
 	VectorXd res;
 	int z=0;
