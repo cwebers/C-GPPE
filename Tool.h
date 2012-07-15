@@ -10,43 +10,94 @@
 // basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 // License for the specific language governing rights and limitations
 // under the License.
+/**
+ * \file Tool.h
+ * \brief File declaring convenient functions.
+
+ * This tool file implements convenient functions for manipulating Eigen Containers,
+ * import data from textfile,displaying containers, generate parameters and do some Math stuff.
+ *
+ */
+
 #ifndef __Tool_H__
 #define __Tool_H__
 #include "Covfunc.h"
 
 
-
-// typdef for the preference pairs : dynamic vectors of dynamic matrices
+/**
+ * \typedef TypePair
+ * \brief typedef for the preference pairs.
+ *
+ * This typedef is used to store dynamics Eigen matrices of two cols into a dynamic Vector.
+ */
 typedef Matrix<Matrix<double, Dynamic, 2>, Dynamic, 1> TypePair;
 
-//typedef used for storing the matrices gradients covariances
+
+/**
+ * \typedef VecMat
+ * \brief typedef for the matrices gradients covariances.
+ *
+ * This typedef is used to store Eigen dynamics matrices into a dynamic Vector.
+ * Used into the project for storing the matrices gradients covariances.
+ */
 typedef Matrix<Matrix<double, Dynamic, Dynamic>, Dynamic, 1> VecMat;
 
-//typedef for the vector type in dlib
+
+/**
+ * \typedef column_vector
+ * \brief typedef for the dlib Vectors.
+ *
+ * This typedef is a dlib dynamic vector of double.
+ */
 typedef matrix<double, 0, 1> column_vector;
 
+/**
+ * \typedef  Vectbool
+ * \brief Vector of boolean.
+ *
+ * This typedef is an Eigen dynamic vector of Boolean.
+ */
 //typedef of a vector containing boolean
 typedef Matrix<bool, Dynamic, 1> Vectbool;
 
 
 
-//no classed yet
-MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx);
-void loss_query_toydata(double &loss, const MatrixXd& F, bool& stop, int test_user_idx, int best_item_idx);
 
 //input functions
-int GetDataline(const string& myfile);
-int GetDatacol(const string& myfile);
+    /*!
+     *	\fn MatrixXd GetData(const string& myfile)
+     *  \brief Gather a Matrix from a textfile into a MatrixXd container.
+     *
+     *	Gather a Matrix from a textfile. The first information into the textfile must be
+     * the number of rows, then the number of column. The insertion into the Matrix is Row 
+     * Major.
+     *	\param string myfile
+     */
 MatrixXd GetData(const string& myfile);
+
+    /*!
+     *	\fn TypePair InputPair(const string& myfile)
+     *  \brief Gather multiple Matrices from a textfile into a TypePair container.
+     *
+     *	Gather multiples Matrices from a folder. A text file names "Informations.txt"
+     *	contains the numbers of matrices into the folder. Then this matrices are stored
+     * into a TypePair container.
+     *	\param string myfile
+     */
 TypePair InputPair(const string& myfile);
 
 //convenient access functions
 
+    /*!
+     *	\fn fliplr(MatrixXd& a)
+     *  \brief flip a Matrix.
+     *
+     *Inverse the parameters contained into the input parameter by row.
+     *	\param MatrixXd a
+     */
 void fliplr(MatrixXd& a);
-//int find(const MatrixXd& a, double val );
 VectorXd find(const VectorXd a, double b);
 void Add(VectorXd& a, double val);
-//VectorXd find(const VectorXd& a, const VectorXd& b);
 MatrixXd GetMat(MatrixXd mat, VectorXd t1, VectorXd t2);
 MatrixXd GetMatRow(MatrixXd mat, VectorXd t1);
 void SetMatRow(MatrixXd& a, VectorXd& t1,MatrixXd &b);
@@ -93,7 +144,8 @@ MatrixXd MatAdd(MatrixXd mat, MatrixXd ln);
 MatrixXd combnk(int n);
 VectorXd randperm(int n);
 VectorXd concatsort(const VectorXd &a,const VectorXd& b);
-
+MatrixXd make_query_toydata(TypePair Oracle, int query_idx, int test_idx);
+void loss_query_toydata(double &loss, const MatrixXd& F, bool& stop, int test_user_idx, int best_item_idx);
 
 //Debugging functions
 

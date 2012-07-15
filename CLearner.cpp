@@ -61,7 +61,7 @@ const double CLearner::negative_marginal_log_likelihood(const column_vector & po
     VectorXd fvis = GetVec(g.Getf(), idx_global);
     double margl = -0.5 * (-log(g.GetKinv().determinant()) + 2 * (log(g.GetL().diagonal().array()).sum()))
                    - 0.5 * fvis.transpose() * g.GetKinv() * fvis + cond_loglike;
-    //dsp(-margl, "nl");
+    dsp(-margl, "nl");
     return -margl;
 
 }
@@ -138,17 +138,13 @@ column_vector CLearner::gradient_negative_marginal_loglikelihood(const column_ve
 	MatrixXd dWdsigma;
 	double dloglike_dsigma, dtheta_sigma;
 	get_dsigma(dWdsigma, dloglike_dsigma, g.Getf(), sigma, train_pairs, M, N);
-	//dsp(dWdsigma,"dWdsigma");
-	//dsp(dloglike_dsigma,"dloglike_dsigma");
 	dWdsigma=GetMat(dWdsigma,idx_global, idx_global);
 	dtheta_sigma= -0.5*((g.Getllt()).solve(dWdsigma)).trace()+ dloglike_dsigma;
-	//dsp(dtheta_sigma,"dtheta_sigma");
 	//Compute implicit derivatives here
 				
 
 	VectorXd dlogp_dsigma= get_dlogp_dsigma(dWdsigma, dloglike_dsigma, g.Getf(), sigma, train_pairs, M, N);
 	VectorXd dfdsigma_vis=(g.Getllt()).solve(GetVec(dlogp_dsigma, idx_global)); //dfdsigma at "observed" values
-	//dsp(dfdsigma_vis,"dfdsigma_vis");
 
 	double dtheta_sigma_implicit=0;
 	int ptr_ind_t, ptr_ind_x;
@@ -160,7 +156,6 @@ column_vector CLearner::gradient_negative_marginal_loglikelihood(const column_ve
 		pairs=train_pairs(ptr_ind_t);
 
 		dWdf=get_dWdf(all_diag_idx, g.Getf(), ptr_ind_t, ptr_ind_x, sigma, pairs, M, N);
-				//dsp(dWdf,"dWdf");
 		dWdf=GetMat(dWdf,idx_global, idx_global);
 
 		double tmp_val= -0.5*(g.Getllt().solve(dWdf)).trace();
@@ -185,7 +180,6 @@ column_vector CLearner::gradient_negative_marginal_loglikelihood(const column_ve
 	dtheta_sigma+=dtheta_sigma_implicit;
 	
 	VectorXd grad_theta=-1*concatTheta( dtheta_kt, dtheta_kx, dtheta_sigma);
-	//dsp(grad_theta,"grad_theta");
 	return EigentoDlib(grad_theta);
 
 }

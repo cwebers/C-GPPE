@@ -16,9 +16,6 @@
 #include <iostream>
 #include <string>
 #include "CGppe.h"
-using namespace std;
-using Eigen::VectorXd;
-using Eigen::MatrixXd;
 
 class CLearner
 {

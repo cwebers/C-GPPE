@@ -26,7 +26,7 @@ Covfunc::Covfunc(const Covfunc & c)
     Theta = Theta = c.Theta;
 }
 
-Covfunc::Covfunc( VectorXd theta)
+Covfunc::Covfunc(const  VectorXd &theta)
 {
     Theta = theta;
 }
@@ -42,19 +42,14 @@ VectorXd Covfunc::GetTheta()
 }
 
 
-void Covfunc::SetTheta(VectorXd t)
+void Covfunc::SetTheta(const VectorXd t)
 {
     Theta = t;
 }
 
-/*void Covfunc::add(int num)
-{
- c=a+b+num;
- cout<<c<<endl;
-}*/
 
 
-MatrixXd Covfunc::ComputeGrandMatrix(MatrixXd fea)
+MatrixXd Covfunc::ComputeGrandMatrix( MatrixXd fea)
 {
     MatrixXd cov = MatrixXd::Zero(fea.rows(), fea.rows());
     for (int i = 0;i < fea.rows();i++)

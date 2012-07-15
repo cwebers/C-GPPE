@@ -14,6 +14,89 @@
 
 #include "CLearner.h"
 
+int Optimisation()
+{
+		//for measuring running time
+    clock_t start, end;
+    double elapsed;
+    start = clock();
+	//declaring the data
+	int N,M;
+	int Maxiter=10;
+	TypePair train_pairs, Oracle;
+	double logsigma=-2.3025;
+ 	VectorXd idx_global_1, idx_global_2, idx_global, ind_t, ind_x;
+ 	MatrixXd pairs, test_t, t, x,idx_pairs, F;
+ 	VectorXd theta_x;
+ 	VectorXd theta_t;
+ 	VectorXd theta;
+ 	VectorXd ftrue, ytrue;
+ 	MatrixXd test_pairs;
+ 	MatrixXd train_t;
+ 	CGppe g=CGppe(new CovSEard(),new CovSEard());
+
+ 	//assigning the Data
+ 	Generate(idx_pairs, t, x, Oracle, train_pairs, F, new CovSEard(), new CovSEard(), theta_t, theta_x, M, N, ftrue,ytrue, test_pairs, test_t 
+ 			,train_t);
+ 	//Computing the indexes
+ 	compute_global_index(idx_global_1, idx_global_2, train_pairs, N);
+    unique(idx_global, idx_global_1, idx_global_2);
+    ind2sub(ind_x, ind_t, N, M, idx_global);
+     int test_user_idx=M-1;
+    theta=concatTheta(theta_t, theta_x,logsigma);
+    
+    int Mtrain=M-1;
+    
+   
+   
+   
+   
+   
+   // VectorXd theta_first = theta;
+    VectorXd theta_first = VectorXd::Zero(theta.rows());
+    theta_first(theta.rows()-1)=logsigma;
+
+    CLearner learner = CLearner(new CovSEard(), new CovSEard(),
+                          train_t, x, train_pairs, idx_global, idx_global_1, idx_global_2, ind_t, ind_x, Mtrain, N);
+
+
+
+
+
+    // Now lets try doing it again with a different starting point and the version
+    // of find_min() that doesn't require you to supply a derivative function.
+    // This version will compute a numerical approximation of the derivative since
+    // we didn't supply one to it.
+    column_vector starting_point;
+    starting_point = EigentoDlib(theta_first);
+
+        cout << "Difference between analytic derivative and numerical approximation of derivative: " 
+              << length(derivative(CNLL_Function(learner))(starting_point) - learner.gradient_negative_marginal_loglikelihood(starting_point)) << endl;
+
+
+// find_min_using_approximate_derivatives(bfgs_search_strategy(),
+// objective_delta_stop_strategy(1e-7),
+// learner,
+// starting_point, INT_MIN);
+ 
+    find_min(bfgs_search_strategy(),
+                                           objective_delta_stop_strategy(1e-7),
+                                           CNLL_Function(learner),
+                                           CGradNLL_Function(learner),
+                                           starting_point, -10);
+    
+    // Again the correct minimum point is found and stored in starting_point
+    cout<<"grad_theta"<<endl;
+    cout << starting_point << endl;
+
+    end = clock();
+    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    cout << "Elapsed Time :" << elapsed << endl;
+	return 0;
+}
+
+
+
 int Posterior()
 {
 	//for measuring running time
@@ -53,7 +136,6 @@ int Posterior()
     end = clock();
     elapsed = ((double)end - start) / CLOCKS_PER_SEC;
     cout << "Elapsed Time :" << elapsed << endl;
-    return 0;
 	return 0;
 }
 
@@ -65,7 +147,7 @@ int teststring()
 	dspair(all_pairs,"all_pairs");
 	dsp(all_pairs.rows(),"avant");
 	all_pairs.conservativeResize(all_pairs.rows()+1);
-		dsp(all_pairs.rows(),"après");
+	dsp(all_pairs.rows(),"après");
 	dspair(all_pairs,"all_pairs");
 
 	return 0;
@@ -143,8 +225,9 @@ int Optimisation_without_derivatives()
     
     // Again the correct minimum point is found and stored in starting_point
     cout << starting_point << endl;
-
-    return 0;
+    end = clock();
+    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    cout << "Elapsed Time :" << elapsed << endl;
 	return 0;
 }
 
@@ -1091,7 +1174,7 @@ int main()
     //findvalue();
     //testgendata();
     //testnl();
-   testgradnl();
+   //testgradnl();
     //testcovderiv();
    //	testopt();
     //testgradcov();
@@ -1103,8 +1186,9 @@ int main()
    // testgenerate();
     //Elicitation();
     //Prediction();
-	//Optimisation_without_derivatives();
+	Optimisation_without_derivatives();
 	//teststring();
 	//Posterior();
+	//Optimisation();
 
 }

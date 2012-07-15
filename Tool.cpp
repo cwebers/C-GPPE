@@ -247,59 +247,6 @@ MatrixXd reshape(VectorXd f, int ln, int col)
 	return a;
 }
 
-
-int GetDataline(const string& myfile)
-{
-	int dim_line=0;
-	ifstream file(myfile.c_str());
-    if(file)
-    {
-         //L'ouverture s'est bien passée. On peut donc lire
-
-        string line;     //Une variable pour stocker les lignes lues
-
-
-        while(getline(file, line))    //as long as we aren't at the end we continue reading
-        {
-
-            dim_line++; //counting the number of line
-        }        
-    }
-    else
-    {
-        cout << "Couldn't open the file" << endl;
-    }
-
-	return dim_line;
-}
-int GetDatacol(const string& myfile)
-{
-	int dim_col=0;
-	ifstream file(myfile.c_str());
-
-    if(file)
-    {
-         //Opening is fine, so we can read the file
-		double num;
-        string line;     //storing the first line read to place the cursor in the second line
-        getline(file, line);
-        int position=file.tellg();
-        position--;
-        file.seekg(0, ios::beg);//we are placing the cursor in the first line
-        while(file.tellg()!=position)
-        {
-        	file>>num;
-        	dim_col++;
-        }
-    }
-    else
-    {
-        cout << "Couldn't open the file" << endl;
-    }
-	return dim_col;
-}
-
-
 MatrixXd GetData(const string& myfile)
 {
 	int dim_line;
@@ -541,7 +488,6 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, int ind_t, int ind_x, doubl
     idx_select_1 = find(idx_1, ind_x);
 	idx_select_2 = find(idx_2, ind_x);
 	idx_select=concatsort(idx_select_1,idx_select_2);
-		dsp(idx_select,"idx_select");
 
     if (idx_select.rows() == 0)
         return dWdf;
@@ -624,42 +570,7 @@ void Add(VectorXd& a, double val)
     inter << a, val;
     a = inter;
 }
-/*
-VectorXd find(const VectorXd& a, const VectorXd& b)
-{
-    VectorXd c;
-    for (int i = 0;i < a.rows();i++)
-    {
-        if (a(i) == b(i))
-            Add(c, i);
-    }
 
-    return c;
-}
-
-int find(const MatrixXd& a, double  val)
-{
-    int idx = 0, i = 0, j = 0, count = 0;
-    bool found = false;
-    while (i < a.rows() && found == false)
-    {
-        j = 0;
-        while (j < a.cols() && found == false)
-        {
-            if (a(i, j) == val)
-            {
-                found = true;
-                idx = sub2ind(a.rows(), a.cols(), i, j);
-            }
-            count++;
-            j++;
-        }
-        i++;
-    }
-    if (found == false)
-        idx = INT_MIN;
-    return idx;
-}*/
 
 void unique(VectorXd& a, const VectorXd& b, const VectorXd& c)
 {
