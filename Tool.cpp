@@ -385,8 +385,8 @@ VectorXd get_dlogp_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const Vec
 
         val = (1 / sigma) * ratio.array() * inter.array();
 
-        coef = get_cum2(idx_1, val, N);
-        coef = coef - get_cum2(idx_2, val, N);
+        coef = Get_Cumulative_Val(idx_1, val, N);
+        coef = coef - Get_Cumulative_Val(idx_2, val, N);
         Dfdsigma.col(j) = coef;
     }
     return concatmat(Dfdsigma);
@@ -434,8 +434,8 @@ void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, 
         dWdsigma = SetMatGenIdx(dWdsigma, ind_trans, -1 * val);
 
         //Now computing the diagonal
-        dWdsigma = SetMatGenIdx(dWdsigma, all_diag_idx, GetMatGenIdx(dWdsigma, all_diag_idx) + get_cum2(idx_global_1, val, n));
-        dWdsigma = SetMatGenIdx(dWdsigma, all_diag_idx, GetMatGenIdx(dWdsigma, all_diag_idx) + get_cum2(idx_global_2, val, n));
+        dWdsigma = SetMatGenIdx(dWdsigma, all_diag_idx, GetMatGenIdx(dWdsigma, all_diag_idx) + Get_Cumulative_Val(idx_global_1, val, n));
+        dWdsigma = SetMatGenIdx(dWdsigma, all_diag_idx, GetMatGenIdx(dWdsigma, all_diag_idx) + Get_Cumulative_Val(idx_global_2, val, n));
 
         dloglike_dsigma = dloglike_dsigma - (z.array() * ratio1.array()).sum();
 
@@ -444,15 +444,7 @@ void get_dsigma(MatrixXd& dWdsigma, double& dloglike_dsigma, const VectorXd& f, 
 }
 
 
-VectorXd get_cum2(VectorXd idx, VectorXd val, int n)
-{
-    VectorXd count = VectorXd::Zero(n);
-    for (int i = 0;i < val.rows();i++)
-    {
-        count(idx(i)) = count(idx(i)) + val(i);
-    }
-    return count;
-}
+
 
 
 void loss_query_toydata(double& loss, const MatrixXd& F, bool& stop, int test_user_idx, int best_item_idx)
@@ -525,8 +517,8 @@ MatrixXd get_dWdf(VectorXd all_diag_idx, VectorXd f, int ind_t, int ind_x, doubl
 
 //now taking care of the diagonal
 
-    dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + get_cum2(idx_global_1, val, n));
-    dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + get_cum2(idx_global_2, val, n));
+    dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + Get_Cumulative_Val(idx_global_1, val, n));
+    dWdf = SetMatGenIdx(dWdf, all_diag_idx, GetMatGenIdx(dWdf, all_diag_idx) + Get_Cumulative_Val(idx_global_2, val, n));
     return dWdf;
 
 }

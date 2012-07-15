@@ -1184,9 +1184,9 @@ int main()
    //testreshape();
    //testaddrows();
    // testgenerate();
-    //Elicitation();
+    Elicitation();
     //Prediction();
-	Optimisation_without_derivatives();
+	//Optimisation_without_derivatives();
 	//teststring();
 	//Posterior();
 	//Optimisation();
