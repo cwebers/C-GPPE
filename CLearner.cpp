@@ -18,6 +18,11 @@ CLearner::CLearner()
 
 }
 
+double CLearner::Getmin()
+{
+	return min;
+}
+
 
 CLearner::CLearner(Covfunc *Covt, Covfunc *Covx,
              MatrixXd T, MatrixXd X, TypePair All_pairs, VectorXd Idx_global, VectorXd Idx_global_1,
@@ -61,7 +66,8 @@ const double CLearner::negative_marginal_log_likelihood(const column_vector & po
     VectorXd fvis = GetVec(g.Getf(), idx_global);
     double margl = -0.5 * (-log(g.GetKinv().determinant()) + 2 * (log(g.GetL().diagonal().array()).sum()))
                    - 0.5 * fvis.transpose() * g.GetKinv() * fvis + cond_loglike;
-    dsp(-margl, "nl");
+    //dsp(-margl, "nl");
+    min=-margl;
     return -margl;
 
 }

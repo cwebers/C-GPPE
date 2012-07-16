@@ -40,9 +40,9 @@ int General()
 
     
     //for measuring running time
-    clock_t start, end;
+   // clock_t start, end;
     double elapsed;
-    start = clock();
+    //start = clock();
 	//declaring the data
 	int N,M;
 	int Maxiter=10;
@@ -80,7 +80,7 @@ int General()
 	
 	
 	
-	
+	/*
    // VectorXd theta_first = theta;
     VectorXd theta_first = VectorXd::Zero(theta.rows());
     theta_first(theta.rows()-1)=logsigma;
@@ -117,10 +117,10 @@ int General()
     // Again the correct minimum point is found and stored in starting_point
     cout<<"grad_theta"<<endl;
     cout << starting_point << endl;
-	
-	end = clock();
-    elapsed = ((double)end - start) / CLOCKS_PER_SEC;
-    cout << "Elapsed Time :" << elapsed << endl;
+	*/
+	//end = clock();
+    //elapsed = ((double)end - start) / CLOCKS_PER_SEC;
+    //cout << "Elapsed Time :" << elapsed << endl;
 	return 0;	
 }
 
@@ -1301,8 +1301,8 @@ int main()
 	//teststring();
 	//Posterior();
 	//Optimisation();
-	testmat();
-	//General();
+	//testmat();
+	General();
 	
 
 }
