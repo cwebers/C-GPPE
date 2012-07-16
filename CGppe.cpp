@@ -247,7 +247,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
     	if ( Lgood > 1) 
     	{
         	vrand = randperm(Lgood);
-        	dsp("Solving clashes at random");
+        	cout<<"Solving clashes at random"<<endl;
         	query_idx = idx_good(vrand(0));
         }
         
@@ -268,7 +268,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
      loss(iter)=loss_current;
 
         count++;
-        cout << "Query " << count << "[" << new_pair(0) << " " << new_pair(1) << "] done, Recommended Item= " << best_item_idx << ", loss=" << loss(iter) << endl << endl;
+        cout << "Query " << count << "[" << new_pair(0) << " " << new_pair(1) << "] done, Recommended Item= " << best_item_idx << ", loss=" << loss(iter) << endl;
     }
 }
 
