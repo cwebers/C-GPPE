@@ -22,14 +22,19 @@
 using namespace std;
 
 /*! \namespace Eigen
- * 
- * Namespace gathering the containers of the Eigen Library and its Optimizers.
+ * \brief Namespace gathering the containers of the Eigen Library and its Optimizers.
+ *
+ *	Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms.
+ *	For more information, please vite the Eigen documentation website : http://eigen.tuxfamily.org/dox/
+ *	
  */ 
  using namespace Eigen;
 
  /*! \namespace Dlib
- * 
- * Namespace gathering the containers of the Dlib Library and its Optimizers.
+ * \brief Namespace gathering the containers of the Dlib Library and its Optimizers.
+ *
+ *	Dlib is a general purpose cross-platform C++ library designed using contract programming and modern C++ techniques.
+ *	For more information, please visit the Dlib documentation websites : http://dlib.net/
  */
 using namespace dlib;
 
