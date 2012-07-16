@@ -410,6 +410,7 @@ unsigned long BinCoef(int n, int k);
      *	\param[in] M: The number of Users.
      *	\param[in] N : The number of Items.
      *	\param[in] theta_x : The parameters for the items's covariance.
+     *	\param[in] theta_t : The parameters for the users's covariance.
      *
      *	\param MatrixXd idx_pairs,MatrixXd  t,MatrixXd x,TypePair Oracle, TypePair  train_pairs, MatrixXd  F, Covfunc *covx, Covfunc *covt, VectorXd theta_t, VectorXd theta_x, int M, int N,
 	 *	VectorXd ftrue, VectorXd ytrue, MatrixXd test_pairs, MatrixXd test_t, MatrixXd train_t 
