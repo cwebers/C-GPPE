@@ -219,6 +219,7 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
         double fbest = get_fbest(N);
         //dsp(fbest,"fbest");
         MatrixXd test_pair;
+        
         for (int i = 0;i < Npairs;i++)
         {
         	Predict_CGppe_Laplace(sigma, t, x,  idx_global, ind_t, ind_x, t.row(M-1), idx_pairs.row(i));
@@ -246,9 +247,10 @@ void CGppe::Elicit( const VectorXd & theta_x, const VectorXd& theta_t, const dou
          
     	if ( Lgood > 1) 
     	{
-        	vrand = randperm(Lgood);
+        	//vrand = randperm(Lgood);
         	cout<<"Solving clashes at random"<<endl;
-        	query_idx = idx_good(vrand(0));
+        	//query_idx = idx_good(vrand(0));
+        	query_idx = idx_good(0);
         }
         
         is_selected(query_idx) = true;
@@ -307,7 +309,7 @@ void CGppe::Make_Predictions_New_User(const VectorXd & theta_x, const VectorXd& 
 
     for (int i = 0;i < P.rows();i++)
     {
-        if (P(i) > 0.5)
+        if (P(i) > 0.5000001)
             ypred(i) = 1;
         else
         	ypred(i)=0;

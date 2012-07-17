@@ -68,7 +68,10 @@ int General()
     ind2sub(ind_x, ind_t, N, M, idx_global);
      int test_user_idx=M-1;
     theta=concatTheta(theta_t, theta_x,logsigma);
-    
+    dsp(M,"Number of Users");
+    dsp(N,"Number of Items");
+    dsp(theta_t.rows()-1,"Dimension of Users");
+    dsp(theta_x.rows()-1,"Dimension of Items");
     int Mtrain=M-1;
     
 	     g.Make_Predictions_New_User(theta_x, theta_t, sigma, t, x, train_pairs,
